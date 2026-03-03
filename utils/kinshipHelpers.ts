@@ -187,7 +187,7 @@ function resolveBloodTerms(
     if (isPaternalSide) {
       // Bên Nội (Anh em của bố)
       if (genderB === "female") {
-        termForB = "Cô";
+        termForB = seniority === "junior" ? "Bác" : "Cô";
       } else {
         termForB = seniority === "junior" ? "Bác" : "Chú";
       }
@@ -256,7 +256,9 @@ function resolveBloodTerms(
           if (isPaternalSide) {
             termForB =
               genderB === "female"
-                ? "Cô họ"
+                ? seniority === "junior"
+                  ? "Bác họ"
+                  : "Cô họ"
                 : seniority === "junior"
                   ? "Bác họ"
                   : "Chú họ";
@@ -422,6 +424,7 @@ export function computeKinship(
     const spouseA = personsMap.get(sId);
     if (!spouseA) continue;
     const res = findBloodKinship(spouseA, personB, personsMap, parentMap);
+
     if (res) {
       let aCallsB = res.aCallsB;
       let bCallsA = res.bCallsA;
@@ -443,7 +446,11 @@ export function computeKinship(
       } else if (res.aCallsB.includes("Chị gái")) {
         aCallsB = "Chị" + suffix;
       } else if (res.aCallsB === "Em họ") {
-        aCallsB = "Em (Em họ của " + suffix + ")";
+        aCallsB = "Em " + suffix + " (họ)";
+      } else if (res.aCallsB === "Chị họ") {
+        aCallsB = "Chị " + suffix + " (họ)";
+      } else if (res.aCallsB === "Anh họ") {
+        aCallsB = "Anh " + suffix + " (họ)";
       } else if (res.aCallsB.includes("Em")) {
         aCallsB = "Em" + suffix;
       } else if (
@@ -466,12 +473,19 @@ export function computeKinship(
         bCallsA = personA.gender === "male" ? "Anh rể" : "Chị dâu";
       } else if (res.bCallsA.includes("Em")) {
         bCallsA = personA.gender === "male" ? "Em rể" : "Em dâu";
+        if (res.bCallsA.includes("họ")) {
+          bCallsA += " (họ)";
+        }
       } else if (res.bCallsA === "Chị họ") {
-        bCallsA = "Anh (Chồng của Chị họ)";
+        bCallsA = "Anh rể (họ)";
       } else if (res.bCallsA === "Anh họ") {
-        bCallsA = "Chị (Vợ của Anh họ)";
+        bCallsA = "Chị dâu (họ)";
       } else if (res.bCallsA === "Chú") {
         bCallsA = "Cô";
+      } else if (res.bCallsA === "Chú họ") {
+        bCallsA = "Thím họ";
+      } else if (res.bCallsA === "Bác họ") {
+        bCallsA = "Bác họ";
       } else if (res.bCallsA === "Cô") {
         bCallsA = "Chú";
       } else if (res.bCallsA === "Cậu") {
@@ -480,6 +494,13 @@ export function computeKinship(
         bCallsA = "Cậu";
       } else if (res.bCallsA === "Bà Cô") {
         bCallsA = "Ông Dượng";
+      } else if (res.bCallsA === "Ông Chú") {
+        bCallsA = "Bà Thím";
+      } else if (res.bCallsA === "Ông Bác") {
+        bCallsA = "Bà Bác";
+      } else {
+        bCallsA =
+          (personA.gender === "male" ? "Chồng" : "Vợ") + " của " + res.bCallsA;
       }
 
       return {
@@ -488,7 +509,7 @@ export function computeKinship(
         bCallsA,
         description: `Thông qua hôn nhân của ${spouseA.full_name}`,
         pathLabels: [
-          `${personA.full_name} là vợ/chồng của ${spouseA.full_name}`,
+          `${personA.full_name} là ${personA.gender === "male" ? "Chồng" : "Vợ"} của ${spouseA.full_name}`,
           ...res.pathLabels,
         ],
       };
@@ -516,13 +537,15 @@ export function computeKinship(
       } else if (res.aCallsB.includes("Chị gái")) {
         aCallsB = personB.gender === "male" ? "Anh rể" : "Chị dâu";
       } else if (res.aCallsB.includes("Chị họ")) {
-        aCallsB = "Anh (Chồng của Chị họ)";
+        aCallsB = "Anh rể (họ)";
       } else if (res.aCallsB.includes("Anh họ")) {
-        aCallsB = "Chị (Vợ của Anh họ)";
+        aCallsB = "Chị dâu (họ)";
       } else if (res.aCallsB.includes("Em")) {
-        aCallsB = personB.gender === "male" ? "Em rể" : "Em dâu";
+        aCallsB = personB.gender === "male" ? "Em rể (họ)" : "Em dâu (họ)";
       } else if (res.aCallsB === "Chú") {
         aCallsB = "Cô";
+      } else if (res.aCallsB === "Chú họ") {
+        aCallsB = "Thím họ";
       } else if (res.aCallsB === "Cô") {
         aCallsB = "Chú";
       } else if (res.aCallsB === "Cậu") {
@@ -531,6 +554,13 @@ export function computeKinship(
         aCallsB = "Cậu";
       } else if (res.aCallsB === "Bà Cô") {
         aCallsB = "Ông Dượng";
+      } else if (res.aCallsB === "Ông Chú") {
+        aCallsB = "Bà Thím";
+      } else if (res.aCallsB === "Ông Bác") {
+        aCallsB = "Bà Bác";
+      } else {
+        aCallsB =
+          (personB.gender === "male" ? "Chồng" : "Vợ") + " của " + res.aCallsB;
       }
 
       // --- B gọi A thông qua spouseB ---
@@ -550,14 +580,18 @@ export function computeKinship(
       } else if (res.bCallsA.includes("Chị gái")) {
         bCallsA = "Chị" + suffix;
       } else if (res.bCallsA === "Em họ") {
-        bCallsA = "Em (Em họ của " + suffix + ")";
+        bCallsA = "Em" + suffix + " (họ)";
+      } else if (res.bCallsA === "Chị họ") {
+        bCallsA = "Chị" + suffix + " (họ)";
+      } else if (res.bCallsA === "Anh họ") {
+        bCallsA = "Anh" + suffix + " (họ)";
       } else if (res.bCallsA.includes("Em")) {
         bCallsA = "Em" + suffix;
       } else if (
         ["Bác", "Chú", "Cô", "Cậu", "Dì"].includes(res.bCallsA) ||
         res.bCallsA.endsWith(" họ")
       ) {
-        bCallsA = res.bCallsA.replace(" họ", "") + suffix;
+        bCallsA = res.bCallsA + suffix;
       }
 
       return {
@@ -567,7 +601,7 @@ export function computeKinship(
         description: `Thông qua hôn nhân của ${spouseB.full_name}`,
         pathLabels: [
           ...res.pathLabels,
-          `${personB.full_name} là vợ/chồng của ${spouseB.full_name}`,
+          `${personB.full_name} là ${personB.gender === "male" ? "Chồng" : "Vợ"} của ${spouseB.full_name}`,
         ],
       };
     }
@@ -584,11 +618,12 @@ export function computeKinship(
 
       const res = findBloodKinship(spouseA, spouseB, personsMap, parentMap);
       if (res) {
+        // res trả về cách gọi người thân của vợ/chồng mình (spouse) nên đổi ngôi
         const prefixA = personA.gender === "male" ? "Chồng" : "Vợ";
         const prefixB = personB.gender === "male" ? "Chồng" : "Vợ";
 
-        let aCallsB = `${prefixA} của ${res.aCallsB}`;
-        let bCallsA = `${prefixB} của ${res.bCallsA}`;
+        let aCallsB = `${prefixB} của ${res.aCallsB}`;
+        let bCallsA = `${prefixA} của ${res.bCallsA}`;
 
         // Đặc biệt: Anh em cột chèo / Chị em dâu (nếu spouseA và spouseB là anh chị em ruột)
         if (res.description.includes("Anh chị em ruột")) {
