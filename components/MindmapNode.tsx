@@ -20,6 +20,8 @@ export interface MindmapContextData {
   hideMales: boolean;
   hideFemales: boolean;
   showAvatar: boolean;
+  hideExpandButtons: boolean;
+  autoCollapseLevel: number;
   expandSignal: { type: "expand" | "collapse"; ts: number } | null;
   setMemberModalId: (id: string | null) => void;
 }
@@ -48,12 +50,26 @@ export const MindmapNode = memo(
     ctx: MindmapContextData;
   }) => {
     const data = getTreeData(personId, ctx);
-    const [isExpanded, setIsExpanded] = useState(level < 2);
+    const [isExpanded, setIsExpanded] = useState(
+      ctx.autoCollapseLevel > 0 ? level < ctx.autoCollapseLevel : level < 2,
+    );
     const [lastSignalTs, setLastSignalTs] = useState(0);
+    const [lastCollapseLevel, setLastCollapseLevel] = useState(
+      ctx.autoCollapseLevel,
+    );
 
+    // React to global expand/collapse signal
     if (ctx.expandSignal && ctx.expandSignal.ts !== lastSignalTs) {
       setIsExpanded(ctx.expandSignal.type === "expand");
       setLastSignalTs(ctx.expandSignal.ts);
+    }
+
+    // React to autoCollapseLevel changes
+    if (ctx.autoCollapseLevel !== lastCollapseLevel) {
+      setLastCollapseLevel(ctx.autoCollapseLevel);
+      if (ctx.autoCollapseLevel > 0) {
+        setIsExpanded(level < ctx.autoCollapseLevel);
+      }
     }
 
     if (!data.person) return null;
@@ -89,7 +105,7 @@ export const MindmapNode = memo(
         <div className="flex items-center gap-2 group relative z-10">
           {/* Expand/Collapse Toggle or spacer */}
           <div className="size-5 flex items-center justify-center shrink-0 z-10 bg-transparent">
-            {hasChildren ? (
+            {hasChildren && !ctx.hideExpandButtons ? (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="size-5 flex items-center justify-center bg-white hover:bg-amber-50 border border-stone-200 rounded shadow-sm text-stone-500 hover:text-amber-600 focus:outline-none transition-colors"
