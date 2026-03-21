@@ -1,6 +1,7 @@
 "use client";
 
 import { Person } from "@/types";
+import { getAvatarBg } from "@/utils/styleHelprs";
 import Image from "next/image";
 import { useDashboard } from "./DashboardContext";
 import DefaultAvatar from "./DefaultAvatar";
@@ -35,8 +36,8 @@ export default function PersonCard({ person }: PersonCardProps) {
       <div className="flex items-center space-x-4 relative z-10">
         <div className="relative">
           <div
-            className={`h-14 w-14 sm:h-16 sm:w-16 rounded-full flex items-center justify-center text-xl font-bold text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105
-            ${person.gender === "male" ? "bg-linear-to-br from-sky-400 to-sky-700" : person.gender === "female" ? "bg-linear-to-br from-rose-400 to-rose-700" : "bg-linear-to-br from-stone-400 to-stone-600"}`}
+            className={`size-14 sm:size-16 rounded-full flex items-center justify-center text-xl font-bold text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105
+            ${getAvatarBg(person.gender)}`}
           >
             {person.avatar_url ? (
               <Image
@@ -48,7 +49,7 @@ export default function PersonCard({ person }: PersonCardProps) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <DefaultAvatar gender={person.gender} />
+              <DefaultAvatar gender={person.gender} size={32} />
             )}
           </div>
           {/* Gender Indicator Icon */}

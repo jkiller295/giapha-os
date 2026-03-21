@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 
 const FamilyTree = dynamic(() => import("@/components/FamilyTree"));
 const MindmapTree = dynamic(() => import("@/components/MindmapTree"));
+const BubbleMapTree = dynamic(() => import("@/components/BubbleMapTree"));
 
 interface DashboardViewsProps {
   persons: Person[];
@@ -107,6 +108,14 @@ export default function DashboardViews({
           )}
           {currentView === "mindmap" && (
             <MindmapTree
+              personsMap={personsMap}
+              relationships={relationships}
+              roots={roots}
+              canEdit={canEdit}
+            />
+          )}
+          {currentView === "bubble" && (
+            <BubbleMapTree
               personsMap={personsMap}
               relationships={relationships}
               roots={roots}

@@ -136,7 +136,7 @@ export default function MemberDetailContent({
                 className="h-full w-full object-cover"
               />
             ) : (
-              <DefaultAvatar gender={person.gender} />
+              <DefaultAvatar gender={person.gender} size={128} />
             )}
           </div>
           {/* Gender Indicator Icon */}
@@ -407,16 +407,18 @@ export default function MemberDetailContent({
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex flex-wrap gap-1.5 mt-auto pt-1 border-t border-stone-200/50">
                             {relStats.maleBiologicalChildren > 0 && (
                               <span className="text-[11px] font-medium text-sky-700 bg-sky-100/50 px-1.5 py-0.5 rounded flex items-center gap-1">
-                                <MaleIcon className="size-3 shrink-0" /> {relStats.maleBiologicalChildren}
+                                <MaleIcon className="size-3 shrink-0" />{" "}
+                                {relStats.maleBiologicalChildren}
                               </span>
                             )}
                             {relStats.femaleBiologicalChildren > 0 && (
                               <span className="text-[11px] font-medium text-rose-700 bg-rose-100/50 px-1.5 py-0.5 rounded flex items-center gap-1">
-                                <FemaleIcon className="size-3 shrink-0" /> {relStats.femaleBiologicalChildren}
+                                <FemaleIcon className="size-3 shrink-0" />{" "}
+                                {relStats.femaleBiologicalChildren}
                               </span>
                             )}
                           </div>
@@ -435,18 +437,26 @@ export default function MemberDetailContent({
                               Dâu / Rể
                             </p>
                           </div>
-                          
+
                           <div className="space-y-1 mt-auto w-full pt-1 border-t border-stone-200/50">
                             {relStats.daughterInLaw > 0 && (
                               <div className="flex items-center justify-between text-xs">
-                                <span className="text-stone-500 font-medium">Con dâu</span>
-                                <span className="font-bold text-stone-700">{relStats.daughterInLaw}</span>
+                                <span className="text-stone-500 font-medium">
+                                  Con dâu
+                                </span>
+                                <span className="font-bold text-stone-700">
+                                  {relStats.daughterInLaw}
+                                </span>
                               </div>
                             )}
                             {relStats.sonInLaw > 0 && (
                               <div className="flex items-center justify-between text-xs">
-                                <span className="text-stone-500 font-medium">Con rể</span>
-                                <span className="font-bold text-stone-700">{relStats.sonInLaw}</span>
+                                <span className="text-stone-500 font-medium">
+                                  Con rể
+                                </span>
+                                <span className="font-bold text-stone-700">
+                                  {relStats.sonInLaw}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -465,18 +475,26 @@ export default function MemberDetailContent({
                               Cháu
                             </p>
                           </div>
-                          
+
                           <div className="space-y-1 mt-auto w-full pt-1 border-t border-stone-200/50">
                             {relStats.paternalGrandchildren > 0 && (
                               <div className="flex items-center justify-between text-xs">
-                                <span className="text-stone-500 font-medium">Cháu nội</span>
-                                <span className="font-bold text-stone-700">{relStats.paternalGrandchildren}</span>
+                                <span className="text-stone-500 font-medium">
+                                  Cháu nội
+                                </span>
+                                <span className="font-bold text-stone-700">
+                                  {relStats.paternalGrandchildren}
+                                </span>
                               </div>
                             )}
                             {relStats.maternalGrandchildren > 0 && (
                               <div className="flex items-center justify-between text-xs">
-                                <span className="text-stone-500 font-medium">Cháu ngoại</span>
-                                <span className="font-bold text-stone-700">{relStats.maternalGrandchildren}</span>
+                                <span className="text-stone-500 font-medium">
+                                  Cháu ngoại
+                                </span>
+                                <span className="font-bold text-stone-700">
+                                  {relStats.maternalGrandchildren}
+                                </span>
                               </div>
                             )}
                           </div>

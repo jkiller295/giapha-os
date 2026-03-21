@@ -3,6 +3,7 @@
 import { DashboardContext, useDashboard } from "@/components/DashboardContext";
 import { Person, RelationshipType } from "@/types";
 import { formatDisplayDate } from "@/utils/dateHelpers";
+import { getAvatarBg } from "@/utils/styleHelprs";
 import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -202,12 +203,17 @@ export default function RelationshipManager({
           (r) => r.direction === "child" && r.type === "biological_child",
         );
         const biologicalChildren = biologicalChildrenList.length;
-        const maleBiologicalChildren = biologicalChildrenList.filter(c => c.targetPerson.gender === "male").length;
-        const femaleBiologicalChildren = biologicalChildrenList.filter(c => c.targetPerson.gender === "female").length;
+        const maleBiologicalChildren = biologicalChildrenList.filter(
+          (c) => c.targetPerson.gender === "male",
+        ).length;
+        const femaleBiologicalChildren = biologicalChildrenList.filter(
+          (c) => c.targetPerson.gender === "female",
+        ).length;
 
         const daughterInLaw = formattedRels.filter(
           (r) =>
-            r.direction === "child_in_law" && r.targetPerson.gender === "female",
+            r.direction === "child_in_law" &&
+            r.targetPerson.gender === "female",
         ).length;
         const sonInLaw = formattedRels.filter(
           (r) =>
@@ -218,33 +224,43 @@ export default function RelationshipManager({
         let paternalGrandchildren = 0;
         let maternalGrandchildren = 0;
         if (childrenIds.length > 0) {
-           const { data: grandchildrenData } = await supabase
-             .from("relationships")
-             .select("id, person_a")
-             .in("type", ["biological_child", "adopted_child"])
-             .in("person_a", childrenIds);
-           
-           if (grandchildrenData) {
-             const maleChildrenIds = formattedRels
-               .filter((r) => r.direction === "child" && r.targetPerson.gender === "male")
-               .map((r) => r.targetPerson.id);
-             const femaleChildrenIds = formattedRels
-               .filter((r) => r.direction === "child" && r.targetPerson.gender === "female")
-               .map((r) => r.targetPerson.id);
+          const { data: grandchildrenData } = await supabase
+            .from("relationships")
+            .select("id, person_a")
+            .in("type", ["biological_child", "adopted_child"])
+            .in("person_a", childrenIds);
 
-             paternalGrandchildren = grandchildrenData.filter((g) => maleChildrenIds.includes(g.person_a)).length;
-             maternalGrandchildren = grandchildrenData.filter((g) => femaleChildrenIds.includes(g.person_a)).length;
-           }
+          if (grandchildrenData) {
+            const maleChildrenIds = formattedRels
+              .filter(
+                (r) =>
+                  r.direction === "child" && r.targetPerson.gender === "male",
+              )
+              .map((r) => r.targetPerson.id);
+            const femaleChildrenIds = formattedRels
+              .filter(
+                (r) =>
+                  r.direction === "child" && r.targetPerson.gender === "female",
+              )
+              .map((r) => r.targetPerson.id);
+
+            paternalGrandchildren = grandchildrenData.filter((g) =>
+              maleChildrenIds.includes(g.person_a),
+            ).length;
+            maternalGrandchildren = grandchildrenData.filter((g) =>
+              femaleChildrenIds.includes(g.person_a),
+            ).length;
+          }
         }
-        
-        onStatsLoaded({ 
-          biologicalChildren, 
-          maleBiologicalChildren, 
-          femaleBiologicalChildren, 
+
+        onStatsLoaded({
+          biologicalChildren,
+          maleBiologicalChildren,
+          femaleBiologicalChildren,
           paternalGrandchildren,
-          maternalGrandchildren, 
-          sonInLaw, 
-          daughterInLaw 
+          maternalGrandchildren,
+          sonInLaw,
+          daughterInLaw,
         });
       }
 
@@ -592,8 +608,8 @@ export default function RelationshipManager({
                       className="flex items-center gap-3 hover:bg-stone-100 p-2.5 -mx-2.5 rounded-xl transition-all duration-200 flex-1 text-left"
                     >
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center text-xs text-white overflow-hidden
-                            ${rel.targetPerson.gender === "male" ? "bg-sky-700" : rel.targetPerson.gender === "female" ? "bg-rose-700" : "bg-stone-500"}`}
+                        className={`size-8 rounded-full flex items-center justify-center text-xs text-white overflow-hidden
+                            ${getAvatarBg(rel.targetPerson.gender)}`}
                       >
                         {rel.targetPerson.avatar_url ? (
                           <Image
@@ -605,7 +621,10 @@ export default function RelationshipManager({
                             height={32}
                           />
                         ) : (
-                          <DefaultAvatar gender={rel.targetPerson.gender} />
+                          <DefaultAvatar
+                            gender={rel.targetPerson.gender}
+                            size={32}
+                          />
                         )}
                       </div>
                       <div className="flex flex-col">
