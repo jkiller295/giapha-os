@@ -482,7 +482,7 @@ export default function DashboardMemberList({
                               return coupleGroups.map((group, gIdx) => {
                                   const isCouple = group.length > 1;
                                   const colSpanClass = group.length === 2 ? 'md:col-span-2' : group.length >= 3 ? 'md:col-span-2 lg:col-span-3' : 'col-span-1';
-                                  const innerGridClass = group.length === 2 ? 'grid-cols-2' : group.length >= 3 ? 'grid-cols-2 lg:grid-cols-3' : 'grid-cols-1';
+                                  const innerGridClass = group.length === 2 ? "grid-cols-1 md:grid-cols-2" : group.length >= 3 ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1";
 
                                 return (
                                   <div key={gIdx} className={`relative ${colSpanClass}`}>
