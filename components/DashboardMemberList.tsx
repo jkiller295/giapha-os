@@ -315,7 +315,7 @@ export default function DashboardMemberList({
               <div className="relative w-full sm:w-auto">
                 <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
                 <select
-                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-52 pl-9 pr-8 py-2.5 rounded-xl border border-stone-200/80 shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
+                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-60 pl-9 pr-8 py-2.5 rounded-xl border border-stone-200/80 shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
                 >
@@ -394,7 +394,7 @@ export default function DashboardMemberList({
                   <div key={gen} className="space-y-6">
                     <div className="flex items-center gap-3">
                       <div className="h-px flex-1 bg-stone-200"></div>
-                      <h3 className="text-lg font-serif font-bold text-amber-800 bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200/50 shadow-sm">
+                      <h3 className="text-lg font-sans font-bold text-amber-800 bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200/50 shadow-sm">
                         {gen === "0" ? "Chưa xác định đời" : `Đời thứ ${gen}`}
                       </h3>
                       <div className="h-px flex-1 bg-stone-200"></div>
