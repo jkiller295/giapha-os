@@ -42,6 +42,7 @@ interface RelationshipExport {
   person_a: string;
   person_b: string;
   note?: string | null;
+  is_divorced?: boolean | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -108,6 +109,7 @@ function sanitizeRelationship(
     person_a: r.person_a,
     person_b: r.person_b,
     note: r.note ?? null,
+    is_divorced: r.is_divorced ?? false,
   };
 }
 
@@ -149,7 +151,7 @@ export async function exportData(
 
   const { data: allRels, error: relationshipsError } = await supabase
     .from("relationships")
-    .select("id, type, person_a, person_b, note, created_at, updated_at")
+    .select("id, type, person_a, person_b, note, is_divorced, created_at, updated_at")
     .order("created_at", { ascending: true });
 
   if (relationshipsError)
@@ -233,7 +235,7 @@ export async function exportData(
   }
 
   return {
-    version: 3, // v3: adds death_lunar_*, person_details_private, relationship note, custom_events
+    version: 4, // v4: adds is_divorced to relationships
     timestamp: new Date().toISOString(),
     persons: exportPersons,
     relationships: exportRels,

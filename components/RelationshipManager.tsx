@@ -31,6 +31,7 @@ interface EnrichedRelationship {
   direction: "parent" | "child" | "spouse" | "child_in_law";
   targetPerson: Person;
   note: string | null;
+  is_divorced?: boolean | null;
 }
 
 export default function RelationshipManager({
@@ -135,6 +136,7 @@ export default function RelationshipManager({
           direction,
           targetPerson: r.target,
           note: r.note,
+          is_divorced: r.is_divorced ?? false,
         });
       });
 
@@ -151,6 +153,7 @@ export default function RelationshipManager({
           direction,
           targetPerson: r.target,
           note: r.note,
+          is_divorced: r.is_divorced ?? false,
         });
       });
 
@@ -612,6 +615,22 @@ export default function RelationshipManager({
     }
   };
 
+  const handleToggleDivorced = async (relId: string, current: boolean) => {
+    try {
+      const { error } = await supabase
+        .from("relationships")
+        .update({ is_divorced: !current })
+        .eq("id", relId);
+      if (error) throw error;
+      fetchRelationships();
+      router.refresh();
+    } catch (err: unknown) {
+      const e = err as Error;
+      setError("Không thể cập nhật: " + e.message);
+      setTimeout(() => setError(null), 5000);
+    }
+  };
+
   const groupByType = (type: string) =>
     relationships
       .filter((r) => r.direction === type)
@@ -697,8 +716,32 @@ export default function RelationshipManager({
                             (Con nuôi)
                           </span>
                         )}
+                        {rel.direction === "spouse" && rel.is_divorced && (
+                          <span className="text-xs text-red-500 font-semibold mt-0.5 flex items-center gap-1">
+                            <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M18 6 6 18M6 6l12 12" />
+                            </svg>
+                            Đã ly hôn
+                          </span>
+                        )}
                       </div>
                     </button>
+                    {canEdit && rel.direction === "spouse" && (
+                      <button
+                        onClick={() => handleToggleDivorced(rel.id, !!rel.is_divorced)}
+                        className={`p-2 sm:p-2.5 rounded-lg transition-colors flex items-center justify-center ml-1 text-xs font-bold border ${
+                          rel.is_divorced
+                            ? "text-red-600 bg-red-50 border-red-200 hover:bg-red-100"
+                            : "text-stone-400 bg-stone-50 border-stone-200 hover:text-red-500 hover:bg-red-50 hover:border-red-200"
+                        }`}
+                        title={rel.is_divorced ? "Bỏ đánh dấu ly hôn" : "Đánh dấu ly hôn"}
+                        aria-label={rel.is_divorced ? "Bỏ đánh dấu ly hôn" : "Đánh dấu ly hôn"}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 6 6 18M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
                     {canEdit && rel.direction !== "child_in_law" && (
                       <button
                         onClick={() => handleDelete(rel.id)}

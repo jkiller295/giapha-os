@@ -9,9 +9,10 @@ import { FemaleIcon, MaleIcon } from "./GenderIcons";
 
 interface PersonCardProps {
   person: Person;
+  isDivorced?: boolean;
 }
 
-export default function PersonCard({ person }: PersonCardProps) {
+export default function PersonCard({ person, isDivorced = false }: PersonCardProps) {
   const { setMemberModalId } = useDashboard();
 
   const isDeceased = person.is_deceased;
@@ -89,6 +90,7 @@ export default function PersonCard({ person }: PersonCardProps) {
             </span>
           </p>
           {(isDeceased ||
+            isDivorced ||
             person.is_in_law ||
             person.birth_order != null ||
             person.generation != null) && (
@@ -120,6 +122,14 @@ export default function PersonCard({ person }: PersonCardProps) {
               {person.generation != null && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 uppercase tracking-widest shadow-xs">
                   Đời thứ {person.generation}
+                </span>
+              )}
+              {isDivorced && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold bg-red-50 text-red-600 border border-red-200/60 uppercase tracking-widest shadow-xs">
+                  <svg className="size-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                  Ly hôn
                 </span>
               )}
               {isDeceased && (

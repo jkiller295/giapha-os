@@ -60,6 +60,7 @@ export interface Relationship {
   person_a: string; // UUID
   person_b: string; // UUID
   note?: string | null;
+  is_divorced?: boolean | null;
   created_at: string;
   updated_at: string;
 }

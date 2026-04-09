@@ -20,6 +20,7 @@ export interface GedcomRelationship {
   type?: string;
   person_a?: string;
   person_b?: string;
+  is_divorced?: boolean;
 }
 
 export function exportToGedcom(data: {
@@ -68,6 +69,7 @@ export function exportToGedcom(data: {
     husb?: string;
     wife?: string;
     children: string[];
+    is_divorced?: boolean;
   }[] = [];
 
   for (const marriage of marriages) {
@@ -82,6 +84,7 @@ export function exportToGedcom(data: {
       wife:
         pA.gender === "female" ? pA.id : pB.gender === "female" ? pB.id : pB.id,
       children: [] as string[],
+      is_divorced: !!(marriage as GedcomRelationship).is_divorced,
     };
     families.push(fam);
   }
@@ -203,6 +206,7 @@ export function exportToGedcom(data: {
     gedcom += `0 @${fam.id}@ FAM\n`;
     if (fam.husb) gedcom += `1 HUSB ${getIndiXref(fam.husb)}\n`;
     if (fam.wife) gedcom += `1 WIFE ${getIndiXref(fam.wife)}\n`;
+    if (fam.is_divorced) gedcom += `1 DIV Y\n`;
     for (const childId of fam.children) {
       gedcom += `1 CHIL ${getIndiXref(childId)}\n`;
     }
@@ -392,9 +396,16 @@ export function parseGedcom(gedcom: string): {
   for (const record of records.filter((r) => r.type === "FAM")) {
     let husb = null;
     let wife = null;
+    let is_divorced = false;
     const children: string[] = [];
 
     for (const line of record.lines) {
+      const divMatch = line.match(/^1\s+DIV(\s+Y)?/i);
+      if (divMatch) {
+        is_divorced = true;
+        continue;
+      }
+
       const match = line.match(/^1\s+(HUSB|WIFE|CHIL)\s+@([^@]+)@/);
       if (match) {
         const tag = match[1];
@@ -413,6 +424,7 @@ export function parseGedcom(gedcom: string): {
         type: "marriage",
         person_a: husb,
         person_b: wife,
+        is_divorced,
       });
     }
 

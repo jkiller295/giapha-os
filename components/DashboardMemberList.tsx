@@ -57,9 +57,10 @@ export default function DashboardMemberList({
     });
   }, [initialPersons, searchTerm, filterOption]);
 
-  const { parentsOf, spousesOf } = useMemo(() => {
+  const { parentsOf, spousesOf, divorcedPairs } = useMemo(() => {
     const pOf = new Map<string, string[]>();
     const sOf = new Map<string, string[]>();
+    const dPairs = new Set<string>();
 
     relationships?.forEach((rel) => {
       if (rel.type === "biological_child" || rel.type === "adopted_child") {
@@ -74,10 +75,15 @@ export default function DashboardMemberList({
         if (!sOf.has(p2)) sOf.set(p2, []);
         sOf.get(p1)!.push(p2);
         sOf.get(p2)!.push(p1);
+        if (rel.is_divorced) {
+          // Store both orderings so lookup is easy
+          dPairs.add(`${p1}__${p2}`);
+          dPairs.add(`${p2}__${p1}`);
+        }
       }
     });
 
-    return { parentsOf: pOf, spousesOf: sOf };
+    return { parentsOf: pOf, spousesOf: sOf, divorcedPairs: dPairs };
   }, [relationships]);
 
   const sortedPersons = useMemo(() => {
@@ -596,6 +602,15 @@ export default function DashboardMemberList({
                                         ? "md:grid-cols-2 lg:grid-cols-3"
                                         : "grid-cols-1";
 
+                                  // Check if any pair in this couple group is divorced
+                                  const isGroupDivorced = group.some((p, i) =>
+                                    group.some(
+                                      (q, j) =>
+                                        i !== j &&
+                                        divorcedPairs.has(`${p.id}__${q.id}`),
+                                    ),
+                                  );
+
                                   return (
                                     <div
                                       key={gIdx}
@@ -604,32 +619,76 @@ export default function DashboardMemberList({
                                       {isCouple && (
                                         <>
                                           {/* Desktop & Tablet background */}
-                                          <div className="hidden md:block absolute -inset-3 lg:-inset-4 bg-amber-50/70 border border-amber-200/80 rounded-4xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0"></div>
+                                          <div
+                                            className={`hidden md:block absolute -inset-3 lg:-inset-4 border rounded-4xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0 ${isGroupDivorced ? "bg-red-50/50 border-red-200/70" : "bg-amber-50/70 border-amber-200/80"}`}
+                                          ></div>
                                           {/* Mobile background */}
-                                          <div className="md:hidden absolute -inset-2 bg-amber-50/70 border border-amber-200/80 rounded-3xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0"></div>
+                                          <div
+                                            className={`md:hidden absolute -inset-2 border rounded-3xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0 ${isGroupDivorced ? "bg-red-50/50 border-red-200/70" : "bg-amber-50/70 border-amber-200/80"}`}
+                                          ></div>
                                         </>
                                       )}
                                       <div
                                         className={`relative z-10 grid grid-cols-1 ${innerGridClass} gap-y-6 md:gap-x-6 h-full`}
                                       >
-                                        {group.map((person, pIdx) => (
-                                          <div
-                                            key={person.id}
-                                            className="relative h-full flex flex-col"
-                                          >
-                                            <PersonCard person={person} />
-                                            {/* Visual link between spouses (desktop >= md) */}
-                                            {isCouple &&
-                                              pIdx < group.length - 1 && (
-                                                <div className="hidden md:block absolute top-[50%] -right-3 w-6 h-0.5 bg-amber-300 z-10 translate-x-1/2"></div>
-                                              )}
-                                            {/* Visual link between spouses (mobile < md) */}
-                                            {isCouple &&
-                                              pIdx < group.length - 1 && (
-                                                <div className="md:hidden absolute -bottom-6 left-1/2 w-0.5 h-6 bg-amber-300 z-10 -translate-x-1/2"></div>
-                                              )}
-                                          </div>
-                                        ))}
+                                        {group.map((person, pIdx) => {
+                                          // Is this specific person divorced from the next person in the group?
+                                          const nextPerson = group[pIdx + 1];
+                                          const isLinkDivorced =
+                                            nextPerson != null &&
+                                            divorcedPairs.has(
+                                              `${person.id}__${nextPerson.id}`,
+                                            );
+                                          const isPersonDivorced =
+                                            person.is_in_law &&
+                                            group.some(
+                                              (q, j) =>
+                                                j !== pIdx &&
+                                                divorcedPairs.has(
+                                                  `${person.id}__${q.id}`,
+                                                ),
+                                            );
+
+                                          return (
+                                            <div
+                                              key={person.id}
+                                              className="relative h-full flex flex-col"
+                                            >
+                                              <PersonCard
+                                                person={person}
+                                                isDivorced={isPersonDivorced}
+                                              />
+                                              {/* Visual link between spouses (desktop >= md) */}
+                                              {isCouple &&
+                                                pIdx < group.length - 1 &&
+                                                (isLinkDivorced ? (
+                                                  <div
+                                                    className="hidden md:block absolute top-[50%] -right-3 w-6 z-10 translate-x-1/2"
+                                                    style={{
+                                                      borderTop:
+                                                        "2px dashed #fca5a5",
+                                                    }}
+                                                  ></div>
+                                                ) : (
+                                                  <div className="hidden md:block absolute top-[50%] -right-3 w-6 h-0.5 bg-amber-300 z-10 translate-x-1/2"></div>
+                                                ))}
+                                              {/* Visual link between spouses (mobile < md) */}
+                                              {isCouple &&
+                                                pIdx < group.length - 1 &&
+                                                (isLinkDivorced ? (
+                                                  <div
+                                                    className="md:hidden absolute -bottom-6 left-1/2 h-6 z-10 -translate-x-1/2"
+                                                    style={{
+                                                      borderLeft:
+                                                        "2px dashed #fca5a5",
+                                                    }}
+                                                  ></div>
+                                                ) : (
+                                                  <div className="md:hidden absolute -bottom-6 left-1/2 w-0.5 h-6 bg-amber-300 z-10 -translate-x-1/2"></div>
+                                                ))}
+                                            </div>
+                                          );
+                                        })}
                                       </div>
                                     </div>
                                   );
