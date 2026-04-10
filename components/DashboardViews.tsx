@@ -55,7 +55,9 @@ export default function DashboardViews({
 
     // If no rootId is provided, fallback to generation 1 or earliest birth year
     if (!finalRootId || !pMap.has(finalRootId)) {
-      const rootsFallback = persons.filter((p) => !childIds.has(p.id));
+      const rootsFallback = persons.filter(
+        (p) => !childIds.has(p.id) && !p.is_in_law,
+      );
       if (rootsFallback.length > 0) {
         const gen1 = rootsFallback.filter((p) => p.generation === 1);
         const sortByBirthYear = (a: Person, b: Person) => {
