@@ -48,12 +48,12 @@ export default async function EditMemberPage({ params }: PageProps) {
     const { data } = await supabase
       .from("person_details_private")
       .select("*")
-      .eq("person_id", id)  
+      .eq("person_id", id)
       .single();
     privateData = data;
   }
 
-  const initialData = isAdmin  ? { ...person, ...privateData }  : { ...person };
+  const initialData = isAdmin ? { ...person, ...privateData } : { ...person };
 
   return (
     <div className="flex-1 w-full relative flex flex-col pb-8">
@@ -75,7 +75,11 @@ export default async function EditMemberPage({ params }: PageProps) {
       </div>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 relative z-10 w-full flex-1">
-        <MemberForm initialData={initialData} isEditing={true} isAdmin={isAdmin} />
+        <MemberForm
+          initialData={initialData}
+          isEditing={true}
+          isAdmin={isAdmin}
+        />
       </main>
     </div>
   );

@@ -358,8 +358,11 @@ export default function DataImportExport() {
                   </h3>
                   <p className="text-sm text-stone-600 mt-2 leading-relaxed">
                     Hệ thống sẽ xoá{" "}
-                    <b>toàn bộ dữ liệu thành viên, mối quan hệ, thông tin riêng tư và sự kiện hiện tại</b> để
-                    thay thế bằng dữ liệu từ file{" "}
+                    <b>
+                      toàn bộ dữ liệu thành viên, mối quan hệ, thông tin riêng
+                      tư và sự kiện hiện tại
+                    </b>{" "}
+                    để thay thế bằng dữ liệu từ file{" "}
                     <span className="font-mono text-xs bg-stone-100 px-1 rounded">
                       {selectedFile?.name}
                     </span>

@@ -101,9 +101,7 @@ export default function MemberForm({
   const [phoneNumber, setPhoneNumber] = useState(
     initialData?.phone_number ?? "",
   );
-  const [occupation, setOccupation] = useState(
-    initialData?.occupation ?? "",
-  );
+  const [occupation, setOccupation] = useState(initialData?.occupation ?? "");
   const [currentResidence, setCurrentResidence] = useState(
     initialData?.current_residence ?? "",
   );

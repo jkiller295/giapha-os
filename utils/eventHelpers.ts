@@ -90,7 +90,7 @@ export function computeEvents(
     death_lunar_day: number | null;
     is_deceased: boolean;
   }[],
-  customEvents: CustomEventRecord[] = []
+  customEvents: CustomEventRecord[] = [],
 ): FamilyEvent[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -98,6 +98,7 @@ export function computeEvents(
 
   for (const p of persons) {
     // ── Birthday (solar) ────────────────────────────────────────────
+    /* Hide birthdays for now since we don't have complete birth date data, and it can be sensitive info
     if (p.birth_month && p.birth_day) {
       const thisYear = today.getFullYear();
       const thisYearDate = new Date(thisYear, p.birth_month - 1, p.birth_day);
@@ -137,14 +138,18 @@ export function computeEvents(
           daysUntil: pastDaysUntil,
         });
       }
-    }
+    }*/
 
     // ── Death anniversary (lunar) ────────────────────────────────────
-    if (p.is_deceased && ((p.death_lunar_month && p.death_lunar_day) || (p.death_month && p.death_day))) {
+    if (
+      p.is_deceased &&
+      ((p.death_lunar_month && p.death_lunar_day) ||
+        (p.death_month && p.death_day))
+    ) {
       try {
         let lMonth: number;
         let lDay: number;
-        
+
         // Prefer exact lunar date from DB
         if (p.death_lunar_month && p.death_lunar_day) {
           lMonth = p.death_lunar_month;
@@ -152,7 +157,11 @@ export function computeEvents(
         } else {
           // Fallback: Convert the solar death date to a lunar date
           const deathYear = p.death_year ?? new Date().getFullYear();
-          const solar = Solar.fromYmd(deathYear, p.death_month as number, p.death_day as number);
+          const solar = Solar.fromYmd(
+            deathYear,
+            p.death_month as number,
+            p.death_day as number,
+          );
           const lunar = solar.getLunar();
           lMonth = Math.abs(lunar.getMonth()); // abs to handle leap month
           lDay = lunar.getDay();
@@ -191,9 +200,17 @@ export function computeEvents(
           );
           const currentLunarYear = todaySolar.getLunar().getYear();
           try {
-            const pastLunar = LunarClass.fromYmd(currentLunarYear, lMonth, lDay);
+            const pastLunar = LunarClass.fromYmd(
+              currentLunarYear,
+              lMonth,
+              lDay,
+            );
             const pastSolar = pastLunar.getSolar();
-            const pastDate = new Date(pastSolar.getYear(), pastSolar.getMonth() - 1, pastSolar.getDay());
+            const pastDate = new Date(
+              pastSolar.getYear(),
+              pastSolar.getMonth() - 1,
+              pastSolar.getDay(),
+            );
             if (pastDate < today) {
               const pastDaysUntil = Math.round(
                 (pastDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),

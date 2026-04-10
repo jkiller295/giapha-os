@@ -66,7 +66,6 @@ export default function DashboardMemberList({
         format: "a4",
       });
       const A4_W_MM = 210;
-      const A4_H_MM = 297;
 
       // Slice the image into pages using an offscreen canvas
       const canvas = document.createElement("canvas");

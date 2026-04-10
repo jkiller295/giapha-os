@@ -1,7 +1,16 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { BarChart2, ChevronDown, Database, GitMerge, Info, Network, UserCircle, Users } from "lucide-react";
+import {
+  BarChart2,
+  ChevronDown,
+  Database,
+  GitMerge,
+  Info,
+  Network,
+  UserCircle,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import LogoutButton from "./LogoutButton";
@@ -78,7 +87,7 @@ export default function HeaderMenu() {
                 <Network className="size-4" />
                 Cây gia phả
               </Link>
-              
+
               <Link
                 href="/dashboard/kinship"
                 onClick={() => setIsOpen(false)}
@@ -104,7 +113,7 @@ export default function HeaderMenu() {
                       Quản trị viên
                     </p>
                   </div>
-                  
+
                   <Link
                     href="/dashboard/users"
                     onClick={() => setIsOpen(false)}

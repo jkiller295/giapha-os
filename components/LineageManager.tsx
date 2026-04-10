@@ -451,23 +451,23 @@ export default function LineageManager({
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                    <tr className="bg-stone-50 border-b border-stone-200/80">
-                      <th className="text-left px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">
-                        Tên
-                      </th>
-                      <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">
-                        Thế hệ
-                      </th>
-                      <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">
-                        Thứ tự
-                      </th>
-                      <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">
-                        Dâu/Rể
-                      </th>
-                      <th className="text-center px-4 py-3 font-semibold text-stone-600">
-                        Trạng thái
-                      </th>
-                    </tr>
+                  <tr className="bg-stone-50 border-b border-stone-200/80">
+                    <th className="text-left px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">
+                      Tên
+                    </th>
+                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">
+                      Thế hệ
+                    </th>
+                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">
+                      Thứ tự
+                    </th>
+                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">
+                      Dâu/Rể
+                    </th>
+                    <th className="text-center px-4 py-3 font-semibold text-stone-600">
+                      Trạng thái
+                    </th>
+                  </tr>
                 </thead>
                 <tbody>
                   {displayedRows.map((u, i) => (
@@ -506,44 +506,44 @@ export default function LineageManager({
                           </>
                         )}
                       </td>
-                        <td className="px-4 py-3 text-center">
-                          <span
-                            className={
-                              u.old_is_in_law !== u.new_is_in_law
-                                ? "text-stone-400"
-                                : ""
-                            }
-                          >
-                            {u.old_is_in_law
-                              ? u.gender === "male"
-                                ? "Rể"
-                                : "Dâu"
-                              : "—"}
+                      <td className="px-4 py-3 text-center">
+                        <span
+                          className={
+                            u.old_is_in_law !== u.new_is_in_law
+                              ? "text-stone-400"
+                              : ""
+                          }
+                        >
+                          {u.old_is_in_law
+                            ? u.gender === "male"
+                              ? "Rể"
+                              : "Dâu"
+                            : "—"}
+                        </span>
+                        {u.old_is_in_law !== u.new_is_in_law && (
+                          <>
+                            <span className="mx-2 text-stone-300">→</span>
+                            <span className="font-bold text-amber-700">
+                              {u.new_is_in_law
+                                ? u.gender === "male"
+                                  ? "Rể"
+                                  : "Dâu"
+                                : "Máu thịt"}
+                            </span>
+                          </>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {u.changed ? (
+                          <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700 border border-amber-200/60">
+                            Cập nhật
                           </span>
-                          {u.old_is_in_law !== u.new_is_in_law && (
-                            <>
-                              <span className="mx-2 text-stone-300">→</span>
-                              <span className="font-bold text-amber-700">
-                                {u.new_is_in_law
-                                  ? u.gender === "male"
-                                    ? "Rể"
-                                    : "Dâu"
-                                  : "Máu thịt"}
-                              </span>
-                            </>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          {u.changed ? (
-                            <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700 border border-amber-200/60">
-                              Cập nhật
-                            </span>
-                          ) : (
-                            <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold bg-stone-100 text-stone-400 border border-stone-200/60">
-                              Không đổi
-                            </span>
-                          )}
-                        </td>
+                        ) : (
+                          <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold bg-stone-100 text-stone-400 border border-stone-200/60">
+                            Không đổi
+                          </span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

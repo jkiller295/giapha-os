@@ -4,7 +4,6 @@ import Papa from "papaparse";
 
 const UTF8_BOM = "\uFEFF";
 
-
 interface PersonDetailsPrivateRow {
   person_id: string;
   phone_number: string | null;

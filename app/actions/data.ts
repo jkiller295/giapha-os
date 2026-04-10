@@ -151,7 +151,9 @@ export async function exportData(
 
   const { data: allRels, error: relationshipsError } = await supabase
     .from("relationships")
-    .select("id, type, person_a, person_b, note, is_divorced, created_at, updated_at")
+    .select(
+      "id, type, person_a, person_b, note, is_divorced, created_at, updated_at",
+    )
     .order("created_at", { ascending: true });
 
   if (relationshipsError)

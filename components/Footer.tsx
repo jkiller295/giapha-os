@@ -48,7 +48,10 @@ export default function Footer({
           >
             HomieLab
           </a>
-          <p className="flex items-center justify-center gap-2 opacity-80 hover:opacity-100 transition-opacity"> | Quản lý bởi Lê Hoàng Duy</p>
+          <p className="flex items-center justify-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+            {" "}
+            | Quản lý bởi Lê Hoàng Duy
+          </p>
         </p>
       </div>
     </footer>

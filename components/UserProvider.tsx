@@ -29,7 +29,9 @@ export function UserProvider({
   const isEditor = profile?.role === "editor" || isAdmin;
 
   return (
-    <UserContext.Provider value={{ user, profile, isAdmin, isEditor, supabase }}>
+    <UserContext.Provider
+      value={{ user, profile, isAdmin, isEditor, supabase }}
+    >
       {children}
     </UserContext.Provider>
   );
