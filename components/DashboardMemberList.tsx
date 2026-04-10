@@ -4,14 +4,7 @@ import PersonCard from "@/components/PersonCard";
 import { Person, Relationship } from "@/types";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
-import {
-  ArrowUpDown,
-  FileText,
-  Filter,
-  Loader2,
-  Plus,
-  Search,
-} from "lucide-react";
+import { ArrowUpDown, FileText, Filter, Loader2, Plus, Search } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useDashboard } from "./DashboardContext";
 
@@ -33,15 +26,124 @@ export default function DashboardMemberList({
 
   const exportToPdf = async () => {
     setIsExportingPdf(true);
-    await new Promise((r) => setTimeout(r, 150)); // let hidden div render
+
+    // Build marriage status maps
+    const marriedIds = new Set<string>();
+    const divorcedIds = new Set<string>();
+    relationships.forEach((r) => {
+      if (r.type === "marriage") {
+        if (r.is_divorced) {
+          divorcedIds.add(r.person_a);
+          divorcedIds.add(r.person_b);
+        } else {
+          marriedIds.add(r.person_a);
+          marriedIds.add(r.person_b);
+        }
+      }
+    });
+
+    const fmtDate = (y: number | null, m: number | null, d: number | null) => {
+      if (!y && !m && !d) return "Chưa rõ";
+      const parts = [];
+      if (d) parts.push(d.toString().padStart(2, "0"));
+      if (m) parts.push(m.toString().padStart(2, "0"));
+      if (y) parts.push(y.toString());
+      return parts.join("/");
+    };
+
+    // Group persons by generation
+    const byGen: Record<number, Person[]> = {};
+    [...initialPersons]
+      .sort((a, b) => (a.generation ?? 999) - (b.generation ?? 999))
+      .forEach((p) => {
+        const g = p.generation ?? 0;
+        if (!byGen[g]) byGen[g] = [];
+        byGen[g].push(p);
+      });
+
+    // Build HTML string
+    const personCard = (p: Person, i: number) => {
+      const dob = fmtDate(p.birth_year, p.birth_month, p.birth_day);
+      const dod = p.is_deceased
+        ? (p.death_day || p.death_month || p.death_year)
+          ? fmtDate(p.death_year, p.death_month, p.death_day)
+          : (p.death_lunar_day || p.death_lunar_month || p.death_lunar_year)
+            ? fmtDate(p.death_lunar_year, p.death_lunar_month, p.death_lunar_day) + " (ÂL)"
+            : "Chưa rõ"
+        : null;
+      const bloodline = p.is_in_law
+        ? (p.gender === "female" ? "Dâu" : p.gender === "male" ? "Rể" : "Khách")
+        : "Huyết thống";
+      const maritalStatus = divorcedIds.has(p.id) ? "Đã ly hôn" : marriedIds.has(p.id) ? "Đã kết hôn" : "Chưa kết hôn";
+      const maritalColor = divorcedIds.has(p.id) ? "#dc2626" : marriedIds.has(p.id) ? "#16a34a" : "#78716c";
+      const genderLabel = p.gender === "male" ? "Nam" : p.gender === "female" ? "Nữ" : "Khác";
+      const genderColor = p.gender === "male" ? "#0369a1" : p.gender === "female" ? "#be185d" : "#57534e";
+      const bloodlineColor = p.is_in_law ? "#9d174d" : "#44403c";
+      const bg = i % 2 === 0 ? "#ffffff" : "#fafaf9";
+
+      const row = (label: string, value: string, color = "#1c1917") =>
+        `<div style="display:flex;gap:8px;margin-bottom:3px;">
+          <span style="font-size:11px;color:#a8a29e;width:110px;flex-shrink:0;">${label}</span>
+          <span style="font-size:12px;color:${color};font-weight:500;">${value}</span>
+        </div>`;
+
+      return `
+        <div style="border:1px solid #e7e5e4;border-radius:8px;padding:12px 14px;background:${bg};">
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0efee;">
+            <span style="font-size:10px;color:#a8a29e;flex-shrink:0;">${i + 1}.</span>
+            <span style="font-size:13px;font-weight:bold;color:#1c1917;line-height:1.3;">
+              ${p.full_name}${p.other_names ? ` <span style="font-weight:normal;color:#78716c;font-size:11px;">(${p.other_names})</span>` : ""}
+            </span>
+          </div>
+          ${row("Giới tính", genderLabel, genderColor)}
+          ${row("Ngày sinh", dob)}
+          ${dod ? row("Ngày mất", dod) : ""}
+          ${row("Hôn nhân", maritalStatus, maritalColor)}
+          ${row("Huyết thống", bloodline, bloodlineColor)}
+          ${p.note ? row("Ghi chú", p.note.slice(0, 60) + (p.note.length > 60 ? "…" : ""), "#78716c") : ""}
+        </div>`;
+    };
+
+    const generationBlocks = Object.entries(byGen).map(([gen, persons]) => `
+      <div style="margin-bottom:40px;">
+        <div style="background:#92400e;padding:10px 20px;margin-bottom:20px;border-radius:6px;">
+          <span style="font-size:16px;font-weight:bold;color:#ffffff;text-transform:uppercase;letter-spacing:0.1em;">
+            ${gen === "0" ? "Chưa xác định đời" : `Đời thứ ${gen}`}
+          </span>
+          <span style="font-size:12px;color:#fde68a;margin-left:12px;">${persons.length} thành viên</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          ${persons.map((p, i) => personCard(p, i)).join("")}
+        </div>
+      </div>`).join("");
+
+    const html = `
+      <div style="width:1240px;background:#ffffff;font-family:Arial,sans-serif;padding:48px;box-sizing:border-box;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <h1 style="font-size:26px;font-weight:bold;color:#1c1917;margin:0;">DANH SÁCH THÀNH VIÊN GIA PHẢ</h1>
+          <p style="font-size:13px;color:#78716c;margin-top:6px;">
+            Xuất ngày ${new Date().toLocaleDateString("vi-VN")} · Tổng cộng ${initialPersons.length} thành viên
+          </p>
+        </div>
+        ${generationBlocks}
+        <div style="margin-top:40px;border-top:1px solid #e7e5e4;padding-top:14px;text-align:center;color:#a8a29e;font-size:11px;">
+          Tài liệu được tạo tự động từ hệ thống Gia Phả
+        </div>
+      </div>`;
+
+    // Mount to body so html-to-image can fully lay it out
+    const wrapper = document.createElement("div");
+    wrapper.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none;z-index:-1;";
+    wrapper.innerHTML = html;
+    document.body.appendChild(wrapper);
+    const el = wrapper.firstElementChild as HTMLElement;
+
+    // Wait for layout
+    await new Promise((r) => setTimeout(r, 300));
 
     try {
-      const el = pdfContainerRef.current;
-      if (!el) return;
-
-      // A4 at 150dpi: 1240 x 1754px, we render wider for quality then scale
       const A4_W_PX = 1240;
-      const A4_H_PX = 1754;
+      const A4_W_MM = 210;
 
       const imgData = await toJpeg(el, {
         cacheBust: true,
@@ -50,24 +152,14 @@ export default function DashboardMemberList({
         width: A4_W_PX,
       });
 
-      // Work out how many A4 pages we need
       const imgEl = new Image();
-      await new Promise<void>((r) => {
-        imgEl.onload = () => r();
-        imgEl.src = imgData;
-      });
+      await new Promise<void>((r) => { imgEl.onload = () => r(); imgEl.src = imgData; });
+
       const totalHeightPx = imgEl.height;
-      const pageHeightPx = Math.round((A4_H_PX / A4_W_PX) * imgEl.width);
+      const pageHeightPx = Math.round((297 / 210) * imgEl.width);
       const pageCount = Math.ceil(totalHeightPx / pageHeightPx);
 
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-      const A4_W_MM = 210;
-
-      // Slice the image into pages using an offscreen canvas
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
       const canvas = document.createElement("canvas");
       canvas.width = imgEl.width;
 
@@ -78,29 +170,18 @@ export default function DashboardMemberList({
         const ctx = canvas.getContext("2d")!;
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, sliceH);
-        ctx.drawImage(
-          imgEl,
-          0,
-          sliceY,
-          imgEl.width,
-          sliceH,
-          0,
-          0,
-          imgEl.width,
-          sliceH,
-        );
+        ctx.drawImage(imgEl, 0, sliceY, imgEl.width, sliceH, 0, 0, imgEl.width, sliceH);
         const sliceData = canvas.toDataURL("image/jpeg", 0.95);
         const sliceHMm = (sliceH / imgEl.width) * A4_W_MM;
         if (i > 0) pdf.addPage();
         pdf.addImage(sliceData, "JPEG", 0, 0, A4_W_MM, sliceHMm);
       }
 
-      pdf.save(
-        `danh-sach-thanh-vien-${new Date().toISOString().split("T")[0]}.pdf`,
-      );
+      pdf.save(`danh-sach-thanh-vien-${new Date().toISOString().split("T")[0]}.pdf`);
     } catch (err) {
       console.error("PDF export error:", err);
     } finally {
+      document.body.removeChild(wrapper);
       setIsExportingPdf(false);
     }
   };
@@ -720,13 +801,9 @@ export default function DashboardMemberList({
                                       {isCouple && (
                                         <>
                                           {/* Desktop & Tablet background */}
-                                          <div
-                                            className={`hidden md:block absolute -inset-3 lg:-inset-4 border rounded-4xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0 ${isGroupDivorced ? "bg-red-50/50 border-red-200/70" : "bg-amber-50/70 border-amber-200/80"}`}
-                                          ></div>
+                                          <div className={`hidden md:block absolute -inset-3 lg:-inset-4 border rounded-4xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0 ${isGroupDivorced ? "bg-red-50/50 border-red-200/70" : "bg-amber-50/70 border-amber-200/80"}`}></div>
                                           {/* Mobile background */}
-                                          <div
-                                            className={`md:hidden absolute -inset-2 border rounded-3xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0 ${isGroupDivorced ? "bg-red-50/50 border-red-200/70" : "bg-amber-50/70 border-amber-200/80"}`}
-                                          ></div>
+                                          <div className={`md:hidden absolute -inset-2 border rounded-3xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0 ${isGroupDivorced ? "bg-red-50/50 border-red-200/70" : "bg-amber-50/70 border-amber-200/80"}`}></div>
                                         </>
                                       )}
                                       <div
@@ -761,32 +838,22 @@ export default function DashboardMemberList({
                                               />
                                               {/* Visual link between spouses (desktop >= md) */}
                                               {isCouple &&
-                                                pIdx < group.length - 1 &&
-                                                (isLinkDivorced ? (
-                                                  <div
-                                                    className="hidden md:block absolute top-[50%] -right-3 w-6 z-10 translate-x-1/2"
-                                                    style={{
-                                                      borderTop:
-                                                        "2px dashed #fca5a5",
-                                                    }}
-                                                  ></div>
-                                                ) : (
-                                                  <div className="hidden md:block absolute top-[50%] -right-3 w-6 h-0.5 bg-amber-300 z-10 translate-x-1/2"></div>
-                                                ))}
+                                                pIdx < group.length - 1 && (
+                                                  isLinkDivorced ? (
+                                                    <div className="hidden md:block absolute top-[50%] -right-3 w-6 z-10 translate-x-1/2" style={{ borderTop: "2px dashed #fca5a5" }}></div>
+                                                  ) : (
+                                                    <div className="hidden md:block absolute top-[50%] -right-3 w-6 h-0.5 bg-amber-300 z-10 translate-x-1/2"></div>
+                                                  )
+                                                )}
                                               {/* Visual link between spouses (mobile < md) */}
                                               {isCouple &&
-                                                pIdx < group.length - 1 &&
-                                                (isLinkDivorced ? (
-                                                  <div
-                                                    className="md:hidden absolute -bottom-6 left-1/2 h-6 z-10 -translate-x-1/2"
-                                                    style={{
-                                                      borderLeft:
-                                                        "2px dashed #fca5a5",
-                                                    }}
-                                                  ></div>
-                                                ) : (
-                                                  <div className="md:hidden absolute -bottom-6 left-1/2 w-0.5 h-6 bg-amber-300 z-10 -translate-x-1/2"></div>
-                                                ))}
+                                                pIdx < group.length - 1 && (
+                                                  isLinkDivorced ? (
+                                                    <div className="md:hidden absolute -bottom-6 left-1/2 h-6 z-10 -translate-x-1/2" style={{ borderLeft: "2px dashed #fca5a5" }}></div>
+                                                  ) : (
+                                                    <div className="md:hidden absolute -bottom-6 left-1/2 w-0.5 h-6 bg-amber-300 z-10 -translate-x-1/2"></div>
+                                                  )
+                                                )}
                                             </div>
                                           );
                                         })}
@@ -818,305 +885,6 @@ export default function DashboardMemberList({
             : "Chưa có thành viên nào. Hãy thêm thành viên đầu tiên."}
         </div>
       )}
-
-      {/* Hidden PDF render surface — sorted by generation */}
-      <div
-        ref={pdfContainerRef}
-        style={{
-          position: "fixed",
-          left: "-9999px",
-          top: 0,
-          width: "1240px",
-          backgroundColor: "#ffffff",
-          fontFamily: "Arial, sans-serif",
-          padding: "48px",
-          boxSizing: "border-box",
-        }}
-        aria-hidden="true"
-      >
-        {/* Title */}
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <h1
-            style={{
-              fontSize: "26px",
-              fontWeight: "bold",
-              color: "#1c1917",
-              margin: 0,
-            }}
-          >
-            DANH SÁCH THÀNH VIÊN GIA PHẢ
-          </h1>
-          <p style={{ fontSize: "13px", color: "#78716c", marginTop: "6px" }}>
-            Xuất ngày {new Date().toLocaleDateString("vi-VN")} · Tổng cộng{" "}
-            {initialPersons.length} thành viên
-          </p>
-        </div>
-
-        {/* Group by generation */}
-        {(() => {
-          // Build marriage status lookup from relationships
-          const marriedIds = new Set<string>();
-          const divorcedIds = new Set<string>();
-          relationships.forEach((r) => {
-            if (r.type === "marriage") {
-              if (r.is_divorced) {
-                divorcedIds.add(r.person_a);
-                divorcedIds.add(r.person_b);
-              } else {
-                marriedIds.add(r.person_a);
-                marriedIds.add(r.person_b);
-              }
-            }
-          });
-
-          const fmtDate = (
-            y: number | null,
-            m: number | null,
-            d: number | null,
-          ) => {
-            if (!y && !m && !d) return "Chưa rõ";
-            const parts = [];
-            if (d) parts.push(d.toString().padStart(2, "0"));
-            if (m) parts.push(m.toString().padStart(2, "0"));
-            if (y) parts.push(y.toString());
-            return parts.join("/");
-          };
-
-          const byGen: Record<number, Person[]> = {};
-          [...initialPersons]
-            .sort((a, b) => (a.generation ?? 999) - (b.generation ?? 999))
-            .forEach((p) => {
-              const g = p.generation ?? 0;
-              if (!byGen[g]) byGen[g] = [];
-              byGen[g].push(p);
-            });
-
-          const Row = ({
-            label,
-            value,
-            valueColor,
-          }: {
-            label: string;
-            value: string;
-            valueColor?: string;
-          }) => (
-            <div style={{ display: "flex", gap: "8px", marginBottom: "3px" }}>
-              <span
-                style={{
-                  fontSize: "11px",
-                  color: "#a8a29e",
-                  width: "110px",
-                  flexShrink: 0,
-                  paddingTop: "1px",
-                }}
-              >
-                {label}
-              </span>
-              <span
-                style={{
-                  fontSize: "12px",
-                  color: valueColor ?? "#1c1917",
-                  fontWeight: "500",
-                }}
-              >
-                {value}
-              </span>
-            </div>
-          );
-
-          return Object.entries(byGen).map(([gen, persons]) => (
-            <div key={gen} style={{ marginBottom: "40px" }}>
-              {/* Generation heading */}
-              <div
-                style={{
-                  backgroundColor: "#92400e",
-                  padding: "10px 20px",
-                  marginBottom: "20px",
-                  borderRadius: "6px",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    color: "#ffffff",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                  }}
-                >
-                  {gen === "0" ? "Chưa xác định đời" : `Đời thứ ${gen}`}
-                </span>
-                <span
-                  style={{
-                    fontSize: "12px",
-                    color: "#fde68a",
-                    marginLeft: "12px",
-                  }}
-                >
-                  {persons.length} thành viên
-                </span>
-              </div>
-
-              {/* Person cards — 3 columns */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "12px",
-                }}
-              >
-                {persons.map((p, i) => {
-                  const dob = fmtDate(p.birth_year, p.birth_month, p.birth_day);
-                  const dod = p.is_deceased
-                    ? p.death_day || p.death_month || p.death_year
-                      ? fmtDate(p.death_year, p.death_month, p.death_day)
-                      : p.death_lunar_day ||
-                          p.death_lunar_month ||
-                          p.death_lunar_year
-                        ? fmtDate(
-                            p.death_lunar_year,
-                            p.death_lunar_month,
-                            p.death_lunar_day,
-                          ) + " (ÂL)"
-                        : "Chưa rõ"
-                    : null;
-
-                  const bloodline = p.is_in_law
-                    ? p.gender === "female"
-                      ? "Dâu"
-                      : p.gender === "male"
-                        ? "Rể"
-                        : "Khách"
-                    : "Huyết thống";
-
-                  const maritalStatus = divorcedIds.has(p.id)
-                    ? "Đã ly hôn"
-                    : marriedIds.has(p.id)
-                      ? "Đã kết hôn"
-                      : "Chưa kết hôn";
-
-                  const maritalColor = divorcedIds.has(p.id)
-                    ? "#dc2626"
-                    : marriedIds.has(p.id)
-                      ? "#16a34a"
-                      : "#78716c";
-                  const genderColor =
-                    p.gender === "male"
-                      ? "#0369a1"
-                      : p.gender === "female"
-                        ? "#be185d"
-                        : "#57534e";
-                  const bloodlineColor = p.is_in_law ? "#9d174d" : "#44403c";
-
-                  return (
-                    <div
-                      key={p.id}
-                      style={{
-                        border: "1px solid #e7e5e4",
-                        borderRadius: "8px",
-                        padding: "12px 14px",
-                        backgroundColor: i % 2 === 0 ? "#ffffff" : "#fafaf9",
-                      }}
-                    >
-                      {/* Name & number */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "baseline",
-                          gap: "6px",
-                          marginBottom: "8px",
-                          paddingBottom: "8px",
-                          borderBottom: "1px solid #f0efee",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontSize: "10px",
-                            color: "#a8a29e",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {i + 1}.
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "13px",
-                            fontWeight: "bold",
-                            color: "#1c1917",
-                            lineHeight: "1.3",
-                          }}
-                        >
-                          {p.full_name}
-                          {p.other_names ? (
-                            <span
-                              style={{
-                                fontWeight: "normal",
-                                color: "#78716c",
-                                fontSize: "11px",
-                              }}
-                            >
-                              {" "}
-                              ({p.other_names})
-                            </span>
-                          ) : null}
-                        </span>
-                      </div>
-                      {/* Fields */}
-                      <Row
-                        label="Giới tính"
-                        value={
-                          p.gender === "male"
-                            ? "Nam"
-                            : p.gender === "female"
-                              ? "Nữ"
-                              : "Khác"
-                        }
-                        valueColor={genderColor}
-                      />
-                      <Row label="Ngày sinh" value={dob} />
-                      {dod && <Row label="Ngày mất" value={dod} />}
-                      <Row
-                        label="Hôn nhân"
-                        value={maritalStatus}
-                        valueColor={maritalColor}
-                      />
-                      <Row
-                        label="Huyết thống"
-                        value={bloodline}
-                        valueColor={bloodlineColor}
-                      />
-                      {p.note && (
-                        <Row
-                          label="Ghi chú"
-                          value={
-                            p.note.slice(0, 60) +
-                            (p.note.length > 60 ? "…" : "")
-                          }
-                          valueColor="#78716c"
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ));
-        })()}
-
-        {/* Footer */}
-        <div
-          style={{
-            marginTop: "40px",
-            borderTop: "1px solid #e7e5e4",
-            paddingTop: "14px",
-            textAlign: "center",
-            color: "#a8a29e",
-            fontSize: "11px",
-          }}
-        >
-          Tài liệu được tạo tự động từ hệ thống Gia Phả
-        </div>
-      </div>
     </>
   );
 }
