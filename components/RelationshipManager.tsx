@@ -44,7 +44,7 @@ export default function RelationshipManager({
   const dashboardContext = useContext(DashboardContext);
   const { setMemberModalId } = useDashboard();
   const router = useRouter();
-  
+
   const personId = person.id;
   const personGender = person.gender;
 
@@ -718,7 +718,15 @@ export default function RelationshipManager({
                         )}
                         {rel.direction === "spouse" && rel.is_divorced && (
                           <span className="text-xs text-red-500 font-semibold mt-0.5 flex items-center gap-1">
-                            <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                            <svg
+                              className="size-3"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2.5}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
                               <path d="M18 6 6 18M6 6l12 12" />
                             </svg>
                             Đã ly hôn
@@ -728,16 +736,36 @@ export default function RelationshipManager({
                     </button>
                     {canEdit && rel.direction === "spouse" && (
                       <button
-                        onClick={() => handleToggleDivorced(rel.id, !!rel.is_divorced)}
+                        onClick={() =>
+                          handleToggleDivorced(rel.id, !!rel.is_divorced)
+                        }
                         className={`p-2 sm:p-2.5 rounded-lg transition-colors flex items-center justify-center ml-1 text-xs font-bold border ${
                           rel.is_divorced
                             ? "text-red-600 bg-red-50 border-red-200 hover:bg-red-100"
                             : "text-stone-400 bg-stone-50 border-stone-200 hover:text-red-500 hover:bg-red-50 hover:border-red-200"
                         }`}
-                        title={rel.is_divorced ? "Bỏ đánh dấu ly hôn" : "Đánh dấu ly hôn"}
-                        aria-label={rel.is_divorced ? "Bỏ đánh dấu ly hôn" : "Đánh dấu ly hôn"}
+                        title={
+                          rel.is_divorced
+                            ? "Bỏ đánh dấu ly hôn"
+                            : "Đánh dấu ly hôn"
+                        }
+                        aria-label={
+                          rel.is_divorced
+                            ? "Bỏ đánh dấu ly hôn"
+                            : "Đánh dấu ly hôn"
+                        }
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="15"
+                          height="15"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M18 6 6 18M6 6l12 12" />
                         </svg>
                       </button>

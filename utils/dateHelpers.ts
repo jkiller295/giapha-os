@@ -4,8 +4,11 @@ export function formatDisplayDate(
   year: number | null,
   month: number | null,
   day: number | null,
+  yearOnly = false,
 ): string {
   if (!year && !month && !day) return "Chưa rõ";
+
+  if (yearOnly) return year ? year.toString() : "Chưa rõ";
 
   const parts = [];
   if (day) parts.push(day.toString().padStart(2, "0"));

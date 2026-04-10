@@ -239,7 +239,8 @@ export default function MemberDetailContent({
                           )}
                         </span>
                       )}
-                    {person.birth_day &&
+                    {isAdmin &&
+                      person.birth_day &&
                       person.birth_month &&
                       getZodiacSign(person.birth_day, person.birth_month) && (
                         <span className="text-[10px] font-sans font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/60 rounded-md px-1.5 py-0.5 whitespace-nowrap shadow-xs tracking-wider">
@@ -254,22 +255,24 @@ export default function MemberDetailContent({
                       person.birth_year,
                       person.birth_month,
                       person.birth_day,
+                      !isAdmin,
                     )}
                   </p>
-                  {(person.birth_year ||
-                    person.birth_month ||
-                    person.birth_day) && (
-                    <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
-                      <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">
-                        Âm lịch
-                      </span>
-                      {getLunarDateString(
-                        person.birth_year,
-                        person.birth_month,
-                        person.birth_day,
-                      ) || "Chưa rõ"}
-                    </p>
-                  )}
+                  {isAdmin &&
+                    (person.birth_year ||
+                      person.birth_month ||
+                      person.birth_day) && (
+                      <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
+                        <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">
+                          Âm lịch
+                        </span>
+                        {getLunarDateString(
+                          person.birth_year,
+                          person.birth_month,
+                          person.birth_day,
+                        ) || "Chưa rõ"}
+                      </p>
+                    )}
                 </div>
               </motion.div>
 
@@ -294,38 +297,46 @@ export default function MemberDetailContent({
                             person.death_year,
                             person.death_month,
                             person.death_day,
+                            !isAdmin,
                           )
-                        : getSolarDateString(
-                            person.death_lunar_year,
-                            person.death_lunar_month,
-                            person.death_lunar_day,
-                          ) || "Chưa rõ"}
-                    </p>
-                    {(person.death_year ||
-                      person.death_month ||
-                      person.death_day ||
-                      person.death_lunar_year ||
-                      person.death_lunar_month ||
-                      person.death_lunar_day) && (
-                      <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
-                        <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">
-                          Âm lịch
-                        </span>
-                        {person.death_lunar_day ||
-                        person.death_lunar_month ||
-                        person.death_lunar_year
-                          ? formatDisplayDate(
+                        : isAdmin
+                          ? getSolarDateString(
                               person.death_lunar_year,
                               person.death_lunar_month,
                               person.death_lunar_day,
-                            )
-                          : getLunarDateString(
-                              person.death_year,
-                              person.death_month,
-                              person.death_day,
-                            ) || "Chưa rõ"}
-                      </p>
-                    )}
+                            ) || "Chưa rõ"
+                          : person.death_year
+                            ? person.death_year.toString()
+                            : person.death_lunar_year
+                              ? person.death_lunar_year.toString()
+                              : "Chưa rõ"}
+                    </p>
+                    {isAdmin &&
+                      (person.death_year ||
+                        person.death_month ||
+                        person.death_day ||
+                        person.death_lunar_year ||
+                        person.death_lunar_month ||
+                        person.death_lunar_day) && (
+                        <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
+                          <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">
+                            Âm lịch
+                          </span>
+                          {person.death_lunar_day ||
+                          person.death_lunar_month ||
+                          person.death_lunar_year
+                            ? formatDisplayDate(
+                                person.death_lunar_year,
+                                person.death_lunar_month,
+                                person.death_lunar_day,
+                              )
+                            : getLunarDateString(
+                                person.death_year,
+                                person.death_month,
+                                person.death_day,
+                              ) || "Chưa rõ"}
+                        </p>
+                      )}
                   </div>
                 </motion.div>
               )}

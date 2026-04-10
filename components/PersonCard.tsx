@@ -12,7 +12,10 @@ interface PersonCardProps {
   isDivorced?: boolean;
 }
 
-export default function PersonCard({ person, isDivorced = false }: PersonCardProps) {
+export default function PersonCard({
+  person,
+  isDivorced = false,
+}: PersonCardProps) {
   const { setMemberModalId } = useDashboard();
 
   const isDeceased = person.is_deceased;
@@ -55,12 +58,12 @@ export default function PersonCard({ person, isDivorced = false }: PersonCardPro
           </div>
           {/* Gender Indicator Icon */}
           <div
-            className={`absolute bottom-0 right-0 size-5 rounded-full ring-2 ring-white shadow-sm flex items-center justify-center ${getGenderStyle(person.gender)}`}
+            className={`absolute bottom-0 right-0 size-4 rounded-full ring-2 ring-white shadow-sm flex items-center justify-center ${getGenderStyle(person.gender)}`}
           >
             {person.gender === "male" ? (
-              <MaleIcon className="size-5" />
+              <MaleIcon className="size-4" />
             ) : person.gender === "female" ? (
-              <FemaleIcon className="size-5" />
+              <FemaleIcon className="size-4" />
             ) : null}
           </div>
         </div>
@@ -126,7 +129,15 @@ export default function PersonCard({ person, isDivorced = false }: PersonCardPro
               )}
               {isDivorced && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold bg-red-50 text-red-600 border border-red-200/60 uppercase tracking-widest shadow-xs">
-                  <svg className="size-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    className="size-3 shrink-0"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M18 6 6 18M6 6l12 12" />
                   </svg>
                   Ly hôn

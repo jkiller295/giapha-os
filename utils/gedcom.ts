@@ -20,7 +20,7 @@ export interface GedcomRelationship {
   type?: string;
   person_a?: string;
   person_b?: string;
-  is_divorced?: boolean;
+  is_divorced?: boolean | null;
 }
 
 export function exportToGedcom(data: {
