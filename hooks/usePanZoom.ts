@@ -1,8 +1,6 @@
 import { MouseEvent, useRef, useState } from "react";
 
-export function usePanZoom(
-  containerRef: React.RefObject<HTMLDivElement | null>,
-) {
+export function usePanZoom(containerRef: React.RefObject<HTMLDivElement | null>) {
   const [isPressed, setIsPressed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const hasDraggedRef = useRef(false);

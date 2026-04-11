@@ -31,14 +31,7 @@ interface StatCardProps {
   delay?: number;
 }
 
-function StatCard({
-  label,
-  value,
-  total,
-  icon,
-  color,
-  delay = 0,
-}: StatCardProps) {
+function StatCard({ label, value, total, icon, color, delay = 0 }: StatCardProps) {
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
 
   return (
@@ -61,9 +54,7 @@ function StatCard({
       </div>
 
       <p className="text-3xl font-bold text-stone-800 relative z-10">{value}</p>
-      <p className="text-sm font-medium text-stone-500 mt-0.5 relative z-10">
-        {label}
-      </p>
+      <p className="text-sm font-medium text-stone-500 mt-0.5 relative z-10">{label}</p>
 
       {/* Progress bar */}
       <div className="mt-3 h-1.5 bg-stone-100 rounded-full overflow-hidden relative z-10">
@@ -93,9 +84,7 @@ function GenerationRow({
   const pct = max > 0 ? (count / max) * 100 : 0;
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs font-bold text-stone-500 w-14 shrink-0">
-        Đời {gen}
-      </span>
+      <span className="text-xs font-bold text-stone-500 w-14 shrink-0">Đời {gen}</span>
       <div className="flex-1 h-2 bg-stone-100 rounded-full overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
@@ -111,10 +100,7 @@ function GenerationRow({
   );
 }
 
-export default function FamilyStats({
-  persons,
-  relationships,
-}: FamilyStatsProps) {
+export default function FamilyStats({ persons, relationships }: FamilyStatsProps) {
   const stats = useMemo(() => {
     const total = persons.length;
 
@@ -126,9 +112,7 @@ export default function FamilyStats({
     const daughtersInLaw = persons.filter(
       (p) => p.is_in_law && p.gender === "female",
     ).length;
-    const sonsInLaw = persons.filter(
-      (p) => p.is_in_law && p.gender === "male",
-    ).length;
+    const sonsInLaw = persons.filter((p) => p.is_in_law && p.gender === "male").length;
 
     // Deceased
     const deceased = persons.filter((p) => p.is_deceased).length;
@@ -165,11 +149,7 @@ export default function FamilyStats({
       }
 
       // Chinese Zodiac
-      const chineseZodiac = getZodiacAnimal(
-        p.birth_year,
-        p.birth_month,
-        p.birth_day,
-      );
+      const chineseZodiac = getZodiacAnimal(p.birth_year, p.birth_month, p.birth_day);
       if (chineseZodiac) {
         chineseZodiacMap.set(
           chineseZodiac,
@@ -350,9 +330,7 @@ export default function FamilyStats({
           <span className="flex items-center gap-2 text-stone-600">
             <span className="size-3 rounded-full bg-pink-400 inline-block" />
             Nữ — {stats.female} người (
-            {stats.total > 0
-              ? Math.round((stats.female / stats.total) * 100)
-              : 0}
+            {stats.total > 0 ? Math.round((stats.female / stats.total) * 100) : 0}
             %)
           </span>
         </div>

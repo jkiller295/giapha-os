@@ -55,9 +55,7 @@ export const MindmapNode = memo(
       ctx.autoCollapseLevel > 0 ? level < ctx.autoCollapseLevel : level < 2,
     );
     const [lastSignalTs, setLastSignalTs] = useState(0);
-    const [lastCollapseLevel, setLastCollapseLevel] = useState(
-      ctx.autoCollapseLevel,
-    );
+    const [lastCollapseLevel, setLastCollapseLevel] = useState(ctx.autoCollapseLevel);
 
     // React to global expand/collapse signal
     if (ctx.expandSignal && ctx.expandSignal.ts !== lastSignalTs) {
@@ -150,10 +148,7 @@ export const MindmapNode = memo(
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <DefaultAvatar
-                              gender={data.person.gender}
-                              size={40}
-                            />
+                            <DefaultAvatar gender={data.person.gender} size={40} />
                           )}
                         </div>
                       </div>
@@ -221,9 +216,7 @@ export const MindmapNode = memo(
                             ${spouseData.person.is_deceased ? "opacity-80 grayscale-[0.3]" : ""}`}
                             title={
                               spouseData.note ||
-                              (spouseData.person.gender === "male"
-                                ? "Chồng"
-                                : "Vợ")
+                              (spouseData.person.gender === "male" ? "Chồng" : "Vợ")
                             }
                           >
                             {ctx.showAvatar && (

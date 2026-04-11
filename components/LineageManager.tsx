@@ -74,9 +74,7 @@ function computeGenerations(
   // Also include persons who have spouses, but neither they nor any of their spouses have parents
   // (to jumpstart disconnected families)
   const processedRoots = new Set(trueRoots.map((p) => p.id));
-  for (const p of persons.filter(
-    (p) => !childParents.has(p.id) && spouseMap.has(p.id),
-  )) {
+  for (const p of persons.filter((p) => !childParents.has(p.id) && spouseMap.has(p.id))) {
     const spouses = spouseMap.get(p.id) || [];
     const anySpouseHasParents = spouses.some((sId) => childParents.has(sId));
     if (
@@ -197,13 +195,10 @@ function computeInLaws(
         // Neither has parents. Identify the "core" ancestor.
         // If one is already marked as not in-law in DB, keep it.
         // Otherwise, prioritize male.
-        const spousesData = spouses.map((sId) =>
-          persons.find((per) => per.id === sId),
-        );
+        const spousesData = spouses.map((sId) => persons.find((per) => per.id === sId));
         const shouldBeBloodline =
           !p.is_in_law ||
-          (p.gender === "male" &&
-            spousesData.every((s) => s?.gender !== "male"));
+          (p.gender === "male" && spousesData.every((s) => s?.gender !== "male"));
 
         inLawMap.set(p.id, !shouldBeBloodline);
       }
@@ -225,8 +220,7 @@ function computeBirthOrders(
 
   for (const r of relationships) {
     if (r.type === "biological_child" || r.type === "adopted_child") {
-      if (!parentChildren.has(r.person_a))
-        parentChildren.set(r.person_a, new Set());
+      if (!parentChildren.has(r.person_a)) parentChildren.set(r.person_a, new Set());
       parentChildren.get(r.person_a)!.add(r.person_b);
     }
   }
@@ -265,10 +259,7 @@ function computeBirthOrders(
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function LineageManager({
-  persons,
-  relationships,
-}: LineageManagerProps) {
+export default function LineageManager({ persons, relationships }: LineageManagerProps) {
   const supabase = createClient();
 
   const [updates, setUpdates] = useState<ComputedUpdate[] | null>(null);
@@ -363,9 +354,7 @@ export default function LineageManager({
   };
 
   const changedCount = updates?.filter((u) => u.changed).length ?? 0;
-  const displayedRows = showAll
-    ? (updates ?? [])
-    : (updates ?? []).slice(0, 20);
+  const displayedRows = showAll ? (updates ?? []) : (updates ?? []).slice(0, 20);
 
   return (
     <div className="space-y-6">
@@ -385,19 +374,13 @@ export default function LineageManager({
         </button>
 
         {updates && changedCount > 0 && !applied && (
-          <button
-            onClick={handleApply}
-            disabled={applying}
-            className="btn-primary"
-          >
+          <button onClick={handleApply} disabled={applying} className="btn-primary">
             {applying ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
               <RefreshCw className="size-4" />
             )}
-            {applying
-              ? "Đang cập nhật..."
-              : `Áp dụng (${changedCount} thay đổi)`}
+            {applying ? "Đang cập nhật..." : `Áp dụng (${changedCount} thay đổi)`}
           </button>
         )}
       </div>
@@ -427,8 +410,7 @@ export default function LineageManager({
             className="flex items-center gap-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl p-4 text-sm font-semibold"
           >
             <CheckCircle2 className="size-5 shrink-0" />
-            Đã áp dụng thành công {changedCount} thay đổi! Tải lại trang để xem
-            kết quả.
+            Đã áp dụng thành công {changedCount} thay đổi! Tải lại trang để xem kết quả.
           </motion.div>
         )}
       </AnimatePresence>
@@ -438,12 +420,9 @@ export default function LineageManager({
         <div>
           <div className="mb-3 flex items-center justify-between">
             <p className="text-sm text-stone-500 font-medium">
-              <span className="text-stone-800 font-bold">{changedCount}</span>{" "}
-              thành viên sẽ được cập nhật /&nbsp;
-              <span className="text-stone-800 font-bold">
-                {updates.length}
-              </span>{" "}
-              tổng
+              <span className="text-stone-800 font-bold">{changedCount}</span> thành viên
+              sẽ được cập nhật /&nbsp;
+              <span className="text-stone-800 font-bold">{updates.length}</span> tổng
             </p>
           </div>
 
@@ -481,9 +460,7 @@ export default function LineageManager({
                         {u.full_name}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className="text-stone-400">
-                          {u.old_generation ?? "—"}
-                        </span>
+                        <span className="text-stone-400">{u.old_generation ?? "—"}</span>
                         {u.old_generation !== u.new_generation && (
                           <>
                             <span className="mx-2 text-stone-300">→</span>
@@ -494,9 +471,7 @@ export default function LineageManager({
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className="text-stone-400">
-                          {u.old_birth_order ?? "—"}
-                        </span>
+                        <span className="text-stone-400">{u.old_birth_order ?? "—"}</span>
                         {u.old_birth_order !== u.new_birth_order && (
                           <>
                             <span className="mx-2 text-stone-300">→</span>
@@ -509,16 +484,10 @@ export default function LineageManager({
                       <td className="px-4 py-3 text-center">
                         <span
                           className={
-                            u.old_is_in_law !== u.new_is_in_law
-                              ? "text-stone-400"
-                              : ""
+                            u.old_is_in_law !== u.new_is_in_law ? "text-stone-400" : ""
                           }
                         >
-                          {u.old_is_in_law
-                            ? u.gender === "male"
-                              ? "Rể"
-                              : "Dâu"
-                            : "—"}
+                          {u.old_is_in_law ? (u.gender === "male" ? "Rể" : "Dâu") : "—"}
                         </span>
                         {u.old_is_in_law !== u.new_is_in_law && (
                           <>
@@ -562,8 +531,8 @@ export default function LineageManager({
                 </>
               ) : (
                 <>
-                  <ChevronDown className="size-4" /> Xem tất cả {updates.length}{" "}
-                  thành viên
+                  <ChevronDown className="size-4" /> Xem tất cả {updates.length} thành
+                  viên
                 </>
               )}
             </button>

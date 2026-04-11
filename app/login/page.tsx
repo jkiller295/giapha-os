@@ -4,14 +4,7 @@ import config from "@/app/config";
 import Footer from "@/components/Footer";
 import { createClient } from "@/utils/supabase/client";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  ArrowLeft,
-  Info,
-  KeyRound,
-  Mail,
-  Shield,
-  UserPlus,
-} from "lucide-react";
+import { ArrowLeft, Info, KeyRound, Mail, Shield, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -85,9 +78,7 @@ export default function LoginPage() {
 
           setError(error.message);
         } else if (data.user?.identities && data.user.identities.length === 0) {
-          setError(
-            "Email này đã được đăng ký. Vui lòng đăng nhập hoặc dùng email khác.",
-          );
+          setError("Email này đã được đăng ký. Vui lòng đăng nhập hoặc dùng email khác.");
         } else {
           if (data.session) {
             router.push("/dashboard");

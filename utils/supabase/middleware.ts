@@ -25,9 +25,7 @@ export async function updateSession(request: NextRequest) {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) =>
-          request.cookies.set(name, value),
-        );
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
         supabaseResponse = NextResponse.next({
           request,
         });
@@ -57,10 +55,7 @@ export async function updateSession(request: NextRequest) {
 
   // Check if DB schema is initialized by checking if profiles table exists
   if (isProtectedPath || isLoginPage) {
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .select("id")
-      .limit(1);
+    const { error: profileError } = await supabase.from("profiles").select("id").limit(1);
 
     if (
       profileError &&

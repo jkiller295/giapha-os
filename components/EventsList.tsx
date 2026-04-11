@@ -1,11 +1,7 @@
 "use client";
 
 import { getZodiacSign } from "@/utils/dateHelpers";
-import {
-  computeEvents,
-  CustomEventRecord,
-  FamilyEvent,
-} from "@/utils/eventHelpers";
+import { computeEvents, CustomEventRecord, FamilyEvent } from "@/utils/eventHelpers";
 import { motion } from "framer-motion";
 import {
   AlignLeft,
@@ -169,9 +165,7 @@ function EventCard({
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <p
             className={`font-semibold text-[15px] sm:text-base truncate transition-colors ${
-              isPast
-                ? "text-stone-500"
-                : "text-stone-800 group-hover:text-amber-700"
+              isPast ? "text-stone-500" : "text-stone-800 group-hover:text-amber-700"
             }`}
           >
             {event.personName}
@@ -233,10 +227,7 @@ function EventCard({
   );
 }
 
-export default function EventsList({
-  persons,
-  customEvents = [],
-}: EventsListProps) {
+export default function EventsList({ persons, customEvents = [] }: EventsListProps) {
   const router = useRouter();
   const [filter, setFilter] = useState<
     "all" | "birthday" | "death_anniversary" | "custom_event" | "past"
@@ -246,8 +237,9 @@ export default function EventsList({
 
   // Custom Event Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCustomEvent, setEditingCustomEvent] =
-    useState<CustomEventRecord | null>(null);
+  const [editingCustomEvent, setEditingCustomEvent] = useState<CustomEventRecord | null>(
+    null,
+  );
 
   const handleOpenEditModal = (event: FamilyEvent) => {
     const rawEvent = customEvents.find((ce) => ce.id === event.personId);
@@ -324,9 +316,7 @@ export default function EventsList({
   const visible = filtered.slice(0, showCount);
 
   const todayCount = allEvents.filter((e) => e.daysUntil === 0).length;
-  const soonCount = allEvents.filter(
-    (e) => e.daysUntil > 0 && e.daysUntil <= 7,
-  ).length;
+  const soonCount = allEvents.filter((e) => e.daysUntil > 0 && e.daysUntil <= 7).length;
 
   return (
     <div className="space-y-5">
@@ -372,9 +362,7 @@ export default function EventsList({
                   {todayCount > 0 && soonCount > 0 && (
                     <span className="hidden sm:inline">·</span>
                   )}
-                  {soonCount > 0 && (
-                    <span>{soonCount} sự kiện trong 7 ngày tới</span>
-                  )}
+                  {soonCount > 0 && <span>{soonCount} sự kiện trong 7 ngày tới</span>}
                 </span>
               </p>
             )}

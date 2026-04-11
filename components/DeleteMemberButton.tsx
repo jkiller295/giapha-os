@@ -9,9 +9,7 @@ interface DeleteMemberButtonProps {
   memberId: string;
 }
 
-export default function DeleteMemberButton({
-  memberId,
-}: DeleteMemberButtonProps) {
+export default function DeleteMemberButton({ memberId }: DeleteMemberButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,9 +37,7 @@ export default function DeleteMemberButton({
         throw err;
       }
       console.error("Delete failed:", err);
-      setError(
-        err instanceof Error ? err.message : "Đã xảy ra lỗi khi xoá hồ sơ.",
-      );
+      setError(err instanceof Error ? err.message : "Đã xảy ra lỗi khi xoá hồ sơ.");
       setIsDeleting(false);
     }
   };

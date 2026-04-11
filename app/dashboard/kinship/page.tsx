@@ -29,10 +29,7 @@ export default async function KinshipPage() {
       </div>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1">
-        <KinshipFinder
-          persons={persons ?? []}
-          relationships={relationships ?? []}
-        />
+        <KinshipFinder persons={persons ?? []} relationships={relationships ?? []} />
       </main>
     </div>
   );

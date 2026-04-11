@@ -32,9 +32,7 @@ export default function MindmapTree({
   const [hideMales, setHideMales] = useState(false);
   const [hideFemales, setHideFemales] = useState(false);
   const [hideExpandButtons, setHideExpandButtons] = useState(false);
-  const [autoCollapseLevel, setAutoCollapseLevel] = useState(
-    DEFAULT_AUTO_COLLAPSE_LEVEL,
-  );
+  const [autoCollapseLevel, setAutoCollapseLevel] = useState(DEFAULT_AUTO_COLLAPSE_LEVEL);
   const [expandSignal, setExpandSignal] = useState<{
     type: "expand" | "collapse";
     ts: number;
@@ -81,9 +79,7 @@ export default function MindmapTree({
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-100 mb-4">
           <Share2 className="size-8 text-stone-300" />
         </div>
-        <p className="text-stone-500 font-medium tracking-wide">
-          Gia phả trống
-        </p>
+        <p className="text-stone-500 font-medium tracking-wide">Gia phả trống</p>
       </div>
     );
   }
@@ -112,10 +108,7 @@ export default function MindmapTree({
       />
 
       {/* Root Container */}
-      <div
-        id="export-container"
-        className="font-sans min-w-max pb-20 p-10 px-0 sm:px-8"
-      >
+      <div id="export-container" className="font-sans min-w-max pb-20 p-10 px-0 sm:px-8">
         {roots.map((root, index) => (
           <MindmapNode
             key={root.id}

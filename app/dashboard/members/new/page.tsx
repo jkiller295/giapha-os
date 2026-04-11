@@ -14,12 +14,8 @@ export default async function NewMemberPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-stone-800">
-            Truy cập bị từ chối
-          </h1>
-          <p className="text-stone-600 mt-2">
-            Bạn không có quyền thêm thành viên.
-          </p>
+          <h1 className="text-2xl font-bold text-stone-800">Truy cập bị từ chối</h1>
+          <p className="text-stone-600 mt-2">Bạn không có quyền thêm thành viên.</p>
         </div>
       </div>
     );

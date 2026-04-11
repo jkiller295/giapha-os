@@ -48,11 +48,7 @@ export default function BubbleMapTree({
     const nodeMap = new Map<string, GraphNode>();
     const linkArray: GraphLink[] = [];
 
-    const addFamilyUnit = (
-      mainPerson: Person,
-      spouses: Person[],
-      isRoot: boolean,
-    ) => {
+    const addFamilyUnit = (mainPerson: Person, spouses: Person[], isRoot: boolean) => {
       if (!nodeMap.has(mainPerson.id)) {
         const people = [mainPerson, ...spouses];
         const radius = isRoot ? 40 : 30;
@@ -244,14 +240,9 @@ export default function BubbleMapTree({
         .attr("width", (d) => d.width)
         .attr("height", (d) => d.radius * 2)
         .attr("fill", "white")
-        .attr("stroke", (d) =>
-          d.people[0].gender === "male" ? "#3b82f6" : "#ec4899",
-        )
+        .attr("stroke", (d) => (d.people[0].gender === "male" ? "#3b82f6" : "#ec4899"))
         .attr("stroke-width", (d) => (d.isRoot ? 4 : 2))
-        .attr(
-          "class",
-          "shadow-md transition-all hover:scale-105 cursor-pointer",
-        );
+        .attr("class", "shadow-md transition-all hover:scale-105 cursor-pointer");
 
       // Avatars for everyone in the Family Unit
       if (showAvatar) {
@@ -303,9 +294,7 @@ export default function BubbleMapTree({
         .attr("font-size", (d) => (d.isRoot ? "14px" : "12px"))
         .attr("font-weight", (d) => (d.isRoot ? "bold" : "normal"))
         .style("pointer-events", "none")
-        .text((d) =>
-          d.people.map((p) => p.full_name.split(" ").pop()).join(" & "),
-        );
+        .text((d) => d.people.map((p) => p.full_name.split(" ").pop()).join(" & "));
 
       simulation.on("tick", () => {
         link
@@ -330,8 +319,8 @@ export default function BubbleMapTree({
     return (
       <div className="absolute inset-0 overflow-hidden bg-stone-50 rounded-2xl border border-stone-200/60 shadow-inner flex items-center justify-center p-4 text-center">
         <span className="text-stone-500">
-          Tính năng này không được hỗ trợ trên trình duyệt của bạn (
-          {error.message}). Vui lòng cập nhật hoặc sử dụng trình duyệt khác.
+          Tính năng này không được hỗ trợ trên trình duyệt của bạn ({error.message}). Vui
+          lòng cập nhật hoặc sử dụng trình duyệt khác.
         </span>
       </div>
     );
@@ -339,10 +328,7 @@ export default function BubbleMapTree({
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-stone-50 rounded-2xl border border-stone-200/60 shadow-inner">
-      <div
-        id="tree-toolbar-portal"
-        className="absolute top-4 left-4 z-50"
-      ></div>
+      <div id="tree-toolbar-portal" className="absolute top-4 left-4 z-50"></div>
 
       <div ref={containerRef} className="w-full h-full">
         <svg ref={svgRef} className="w-full h-full block" />

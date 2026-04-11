@@ -35,8 +35,8 @@ export default async function SetupPage() {
                 Khởi tạo Cơ sở dữ liệu
               </h2>
               <p className="text-stone-500 font-medium">
-                Hệ thống phát hiện database của bạn chưa được thiết lập cấu trúc
-                bảng (schema).
+                Hệ thống phát hiện database của bạn chưa được thiết lập cấu trúc bảng
+                (schema).
               </p>
             </div>
           </div>
@@ -51,9 +51,8 @@ export default async function SetupPage() {
 
                 <ol className="list-decimal list-inside space-y-4 text-stone-600">
                   <li className="leading-relaxed">
-                    Bấm nút{" "}
-                    <strong className="text-indigo-600">Copy Mã SQL</strong> ở
-                    bên dưới để sao chép toàn bộ cấu trúc cơ sở dữ liệu.
+                    Bấm nút <strong className="text-indigo-600">Copy Mã SQL</strong> ở bên
+                    dưới để sao chép toàn bộ cấu trúc cơ sở dữ liệu.
                   </li>
                   <li className="leading-relaxed">
                     Mở{" "}
@@ -68,16 +67,16 @@ export default async function SetupPage() {
                     trong dự án của bạn.
                   </li>
                   <li className="leading-relaxed">
-                    <strong>Dán (Paste)</strong> mã vừa copy vào khung soạn thảo
-                    của Supabase.
+                    <strong>Dán (Paste)</strong> mã vừa copy vào khung soạn thảo của
+                    Supabase.
                   </li>
                   <li className="leading-relaxed">
-                    Bấm nút <strong>RUN</strong> (Chạy) ở góc phải dưới cùng màn
-                    hình Supabase.
+                    Bấm nút <strong>RUN</strong> (Chạy) ở góc phải dưới cùng màn hình
+                    Supabase.
                   </li>
                   <li className="leading-relaxed">
-                    Quay lại đây và <strong>Tải lại trang</strong> (hoặc bấm
-                    Đăng nhập lại).
+                    Quay lại đây và <strong>Tải lại trang</strong> (hoặc bấm Đăng nhập
+                    lại).
                   </li>
                 </ol>
 
@@ -89,9 +88,7 @@ export default async function SetupPage() {
 
             <div className="col-span-1 border border-stone-200 rounded-2xl overflow-hidden bg-[#1e1e1e] flex flex-col h-[400px]">
               <div className="bg-[#2d2d2d] px-4 py-2 flex items-center justify-between border-b border-stone-800">
-                <span className="text-stone-400 text-xs font-mono">
-                  docs/schema.sql
-                </span>
+                <span className="text-stone-400 text-xs font-mono">docs/schema.sql</span>
               </div>
               <div className="p-4 overflow-y-auto w-full flex-grow custom-scrollbar">
                 <pre className="text-xs sm:text-sm font-mono text-stone-300 leading-relaxed whitespace-pre">

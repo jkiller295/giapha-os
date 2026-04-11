@@ -37,9 +37,7 @@ export function exportToGedcom(data: {
   gedcom += "2 NAME Giapha OS\n";
   gedcom += "2 VERS 0.1.0\n";
 
-  const personMap = new Map(
-    data.persons.filter((p) => !!p.id).map((p) => [p.id!, p]),
-  );
+  const personMap = new Map(data.persons.filter((p) => !!p.id).map((p) => [p.id!, p]));
 
   // Map original IDs to short export IDs (to satisfy 20-char XREF limit)
   const exportIdMap = new Map<string, string>();
@@ -54,8 +52,7 @@ export function exportToGedcom(data: {
     id ? `@${exportIdMap.get(id) || id.replace(/-/g, "")}@` : "";
 
   // Helper formatting Date
-  const formatNum = (n: number | null) =>
-    n && n > 0 ? String(n).padStart(2, "0") : "";
+  const formatNum = (n: number | null) => (n && n > 0 ? String(n).padStart(2, "0") : "");
 
   // Pre-process Families
   let familyCounter = 1;
@@ -81,8 +78,7 @@ export function exportToGedcom(data: {
     const fam = {
       id: `F${familyCounter++}`,
       husb: pA.gender === "male" ? pA.id : pB.gender === "male" ? pB.id : pA.id,
-      wife:
-        pA.gender === "female" ? pA.id : pB.gender === "female" ? pB.id : pB.id,
+      wife: pA.gender === "female" ? pA.id : pB.gender === "female" ? pB.id : pB.id,
       children: [] as string[],
       is_divorced: !!(marriage as GedcomRelationship).is_divorced,
     };
@@ -121,18 +117,15 @@ export function exportToGedcom(data: {
   for (const fam of families) {
     if (fam.husb) {
       const current = personFams.get(fam.husb) || [];
-      if (!current.includes(fam.id))
-        personFams.set(fam.husb, [...current, fam.id]);
+      if (!current.includes(fam.id)) personFams.set(fam.husb, [...current, fam.id]);
     }
     if (fam.wife) {
       const current = personFams.get(fam.wife) || [];
-      if (!current.includes(fam.id))
-        personFams.set(fam.wife, [...current, fam.id]);
+      if (!current.includes(fam.id)) personFams.set(fam.wife, [...current, fam.id]);
     }
     for (const childId of fam.children) {
       const current = personFamc.get(childId) || [];
-      if (!current.includes(fam.id))
-        personFamc.set(childId, [...current, fam.id]);
+      if (!current.includes(fam.id)) personFamc.set(childId, [...current, fam.id]);
     }
   }
 

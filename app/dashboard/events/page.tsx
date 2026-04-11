@@ -35,10 +35,7 @@ export default async function EventsPage() {
         </div>
 
         <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1">
-          <EventsList
-            persons={persons ?? []}
-            customEvents={customEvents ?? []}
-          />
+          <EventsList persons={persons ?? []} customEvents={customEvents ?? []} />
         </main>
       </div>
 

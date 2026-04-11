@@ -27,10 +27,7 @@ export default function MemberDetailModal() {
   const [error, setError] = useState<string | null>(null);
 
   const [person, setPerson] = useState<Person | null>(null);
-  const [privateData, setPrivateData] = useState<Record<
-    string,
-    unknown
-  > | null>(null);
+  const [privateData, setPrivateData] = useState<Record<string, unknown> | null>(null);
 
   const closeModal = () => {
     setMemberModalId(null);
@@ -142,9 +139,7 @@ export default function MemberDetailModal() {
   };
 
   // initialData for MemberForm — merge public + private
-  const formInitialData = person
-    ? { ...person, ...(privateData ?? {}) }
-    : undefined;
+  const formInitialData = person ? { ...person, ...(privateData ?? {}) } : undefined;
 
   return (
     <AnimatePresence>
@@ -158,10 +153,7 @@ export default function MemberDetailModal() {
         >
           {/* Click-away backdrop (disabled while editing/creating to avoid accidental close) */}
           {!isEditing && !showCreateMember && (
-            <div
-              className="absolute inset-0 cursor-pointer"
-              onClick={closeModal}
-            />
+            <div className="absolute inset-0 cursor-pointer" onClick={closeModal} />
           )}
 
           {/* Modal Content */}
@@ -265,9 +257,7 @@ export default function MemberDetailModal() {
                   </h2>
                   <MemberForm
                     initialData={
-                      formInitialData as Parameters<
-                        typeof MemberForm
-                      >[0]["initialData"]
+                      formInitialData as Parameters<typeof MemberForm>[0]["initialData"]
                     }
                     isEditing={true}
                     isAdmin={isAdmin}

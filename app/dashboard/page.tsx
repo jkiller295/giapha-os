@@ -53,9 +53,7 @@ export default async function DashboardLaunchpad() {
     .select("id, name, content, event_date, location, created_by");
 
   const allEvents = computeEvents(persons ?? [], customEvents ?? []);
-  const upcomingEvents = allEvents.filter(
-    (e) => e.daysUntil >= 0 && e.daysUntil <= 30,
-  );
+  const upcomingEvents = allEvents.filter((e) => e.daysUntil >= 0 && e.daysUntil <= 30);
 
   const lunar = getTodayLunar();
 
@@ -267,9 +265,7 @@ export default async function DashboardLaunchpad() {
                 <h4 className="text-lg font-bold text-stone-800 mb-2 group-hover:text-amber-700 transition-colors">
                   {feat.title}
                 </h4>
-                <p className="text-sm text-stone-500 line-clamp-2">
-                  {feat.description}
-                </p>
+                <p className="text-sm text-stone-500 line-clamp-2">{feat.description}</p>
               </Link>
             ))}
           </div>

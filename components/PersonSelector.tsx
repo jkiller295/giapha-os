@@ -61,10 +61,7 @@ export default function PersonSelector({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -276,9 +273,7 @@ export default function PersonSelector({
                   <div className="text-sm font-medium text-stone-600">
                     Không tìm thấy kết quả
                   </div>
-                  <div className="text-xs text-stone-400">
-                    Thử tìm với tên khác
-                  </div>
+                  <div className="text-xs text-stone-400">Thử tìm với tên khác</div>
                 </div>
               )}
             </div>

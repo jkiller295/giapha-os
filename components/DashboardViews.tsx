@@ -16,8 +16,8 @@ const BubbleMapTree = dynamic(
       return {
         default: () => (
           <div className="flex absolute inset-0 items-center justify-center p-4 text-center bg-stone-50 rounded-2xl border border-stone-200/60 shadow-inner text-stone-500">
-            Tính năng này không được hỗ trợ trên trình duyệt của bạn. Vui lòng
-            cập nhật hoặc sử dụng trình duyệt khác.
+            Tính năng này không được hỗ trợ trên trình duyệt của bạn. Vui lòng cập nhật
+            hoặc sử dụng trình duyệt khác.
           </div>
         ),
       };
@@ -45,9 +45,7 @@ export default function DashboardViews({
 
     const childIds = new Set(
       relationships
-        .filter(
-          (r) => r.type === "biological_child" || r.type === "adopted_child",
-        )
+        .filter((r) => r.type === "biological_child" || r.type === "adopted_child")
         .map((r) => r.person_b),
     );
 
@@ -55,9 +53,7 @@ export default function DashboardViews({
 
     // If no rootId is provided, fallback to generation 1 or earliest birth year
     if (!finalRootId || !pMap.has(finalRootId)) {
-      const rootsFallback = persons.filter(
-        (p) => !childIds.has(p.id) && !p.is_in_law,
-      );
+      const rootsFallback = persons.filter((p) => !childIds.has(p.id) && !p.is_in_law);
       if (rootsFallback.length > 0) {
         const gen1 = rootsFallback.filter((p) => p.generation === 1);
         const sortByBirthYear = (a: Person, b: Person) => {

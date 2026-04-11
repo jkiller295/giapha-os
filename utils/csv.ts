@@ -61,9 +61,7 @@ export async function parseCsvZip(zipBlob: Blob): Promise<{
   const relationshipsFile = loadedZip.file("relationships.csv");
 
   if (!personsFile || !relationshipsFile) {
-    throw new Error(
-      "File ZIP không hợp lệ: thiếu persons.csv hoặc relationships.csv.",
-    );
+    throw new Error("File ZIP không hợp lệ: thiếu persons.csv hoặc relationships.csv.");
   }
 
   const personsCsvRaw = await personsFile.async("text");
@@ -82,14 +80,11 @@ export async function parseCsvZip(zipBlob: Blob): Promise<{
     dynamicTyping: true, // Tự động convert số và boolean
   });
 
-  const relationshipsParsed = Papa.parse<Partial<Relationship>>(
-    relationshipsCsvStr,
-    {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-    },
-  );
+  const relationshipsParsed = Papa.parse<Partial<Relationship>>(relationshipsCsvStr, {
+    header: true,
+    skipEmptyLines: true,
+    dynamicTyping: true,
+  });
 
   if (personsParsed.errors.length > 0) {
     console.error("Lỗi parse persons.csv:", personsParsed.errors);
@@ -120,10 +115,7 @@ export async function parseCsvZip(zipBlob: Blob): Promise<{
       dynamicTyping: true,
     });
     if (privateParsed.errors.length > 0) {
-      console.error(
-        "Lỗi parse person_details_private.csv:",
-        privateParsed.errors,
-      );
+      console.error("Lỗi parse person_details_private.csv:", privateParsed.errors);
     }
     result.person_details_private = privateParsed.data;
   }

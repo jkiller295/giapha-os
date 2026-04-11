@@ -64,15 +64,11 @@ export default function AdminUserList({
         return;
       }
 
-      setUsers(
-        users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)),
-      );
+      setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
       showNotification("Đã cập nhật vai trò người dùng thành công.", "success");
     } catch (error: unknown) {
       const msg =
-        error instanceof Error
-          ? error.message
-          : "Lỗi không xác định khi đổi quyền";
+        error instanceof Error ? error.message : "Lỗi không xác định khi đổi quyền";
       showNotification(msg, "error");
     } finally {
       setLoadingId(null);
@@ -96,20 +92,14 @@ export default function AdminUserList({
         return;
       }
 
-      setUsers(
-        users.map((u) =>
-          u.id === userId ? { ...u, is_active: newStatus } : u,
-        ),
-      );
+      setUsers(users.map((u) => (u.id === userId ? { ...u, is_active: newStatus } : u)));
       showNotification(
         `Đã ${newStatus ? "duyệt" : "khoá"} người dùng thành công.`,
         "success",
       );
     } catch (error: unknown) {
       const msg =
-        error instanceof Error
-          ? error.message
-          : "Lỗi không xác định khi đổi trạng thái";
+        error instanceof Error ? error.message : "Lỗi không xác định khi đổi trạng thái";
       showNotification(msg, "error");
     } finally {
       setLoadingId(null);
@@ -124,11 +114,7 @@ export default function AdminUserList({
       );
       return;
     }
-    if (
-      !confirm(
-        "Bạn có chắc chắn muốn xóa user này khỏi hệ thống vĩnh viễn không?",
-      )
-    )
+    if (!confirm("Bạn có chắc chắn muốn xóa user này khỏi hệ thống vĩnh viễn không?"))
       return;
     try {
       setLoadingId(userId);
@@ -143,9 +129,7 @@ export default function AdminUserList({
       showNotification("Đã xóa người dùng thành công.", "success");
     } catch (error: unknown) {
       const msg =
-        error instanceof Error
-          ? error.message
-          : "Lỗi không xác định khi xoá user";
+        error instanceof Error ? error.message : "Lỗi không xác định khi xoá user";
       showNotification(msg, "error");
     } finally {
       setLoadingId(null);
@@ -155,10 +139,7 @@ export default function AdminUserList({
   const handleCreateUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isDemo) {
-      showNotification(
-        "Đây là trang demo, chức năng tạo người dùng bị hạn chế.",
-        "info",
-      );
+      showNotification("Đây là trang demo, chức năng tạo người dùng bị hạn chế.", "info");
       setIsCreateModalOpen(false);
       return;
     }
@@ -180,9 +161,7 @@ export default function AdminUserList({
       setTimeout(() => window.location.reload(), 1500);
     } catch (error: unknown) {
       const msg =
-        error instanceof Error
-          ? error.message
-          : "Lỗi không xác định khi tạo user";
+        error instanceof Error ? error.message : "Lỗi không xác định khi tạo user";
       showNotification(msg, "error");
     } finally {
       setIsCreating(false);
@@ -256,16 +235,8 @@ export default function AdminUserList({
       </AnimatePresence>
 
       <div className="flex justify-end">
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="btn-primary"
-        >
-          <svg
-            className="size-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+        <button onClick={() => setIsCreateModalOpen(true)} className="btn-primary">
+          <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -282,9 +253,7 @@ export default function AdminUserList({
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="uppercase tracking-wider border-b border-stone-200/60 bg-stone-50/50">
               <tr>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs">
-                  Email
-                </th>
+                <th className="px-6 py-4 text-stone-500 font-semibold text-xs">Email</th>
                 <th className="px-6 py-4 text-stone-500 font-semibold text-xs">
                   Vai trò
                 </th>
@@ -301,13 +270,8 @@ export default function AdminUserList({
             </thead>
             <tbody className="divide-y divide-stone-100">
               {users.map((user) => (
-                <tr
-                  key={user.id}
-                  className="hover:bg-stone-50/80 transition-colors"
-                >
-                  <td className="px-6 py-4 font-medium text-stone-900">
-                    {user.email}
-                  </td>
+                <tr key={user.id} className="hover:bg-stone-50/80 transition-colors">
+                  <td className="px-6 py-4 font-medium text-stone-900">{user.email}</td>
                   <td className="px-6 py-4">
                     {user.id === currentUserId ? (
                       <span
@@ -338,12 +302,8 @@ export default function AdminUserList({
                   </td>
                   <td className="px-6 py-4">
                     <button
-                      disabled={
-                        loadingId === user.id || user.id === currentUserId
-                      }
-                      onClick={() =>
-                        handleStatusChange(user.id, !user.is_active)
-                      }
+                      disabled={loadingId === user.id || user.id === currentUserId}
+                      onClick={() => handleStatusChange(user.id, !user.is_active)}
                       className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium transition-colors ${
                         user.is_active
                           ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
@@ -388,10 +348,7 @@ export default function AdminUserList({
               ))}
               {users.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={4}
-                    className="px-6 py-8 text-center text-stone-500"
-                  >
+                  <td colSpan={4} className="px-6 py-8 text-center text-stone-500">
                     Không tìm thấy người dùng nào.
                   </td>
                 </tr>
@@ -496,11 +453,7 @@ export default function AdminUserList({
                 >
                   Hủy
                 </button>
-                <button
-                  type="submit"
-                  disabled={isCreating}
-                  className="btn-primary"
-                >
+                <button type="submit" disabled={isCreating} className="btn-primary">
                   {isCreating ? "Đang tạo..." : "Tạo người dùng"}
                 </button>
               </div>

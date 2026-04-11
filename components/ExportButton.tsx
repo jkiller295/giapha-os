@@ -3,14 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { toJpeg, toPng } from "html-to-image";
 import jsPDF from "jspdf";
-import {
-  AlertCircle,
-  Download,
-  FileImage,
-  FileText,
-  Loader2,
-  X,
-} from "lucide-react";
+import { AlertCircle, Download, FileImage, FileText, Loader2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export default function ExportButton() {

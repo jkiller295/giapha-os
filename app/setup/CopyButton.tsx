@@ -14,9 +14,7 @@ export default function CopyButton({ content }: { content: string }) {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy text: ", err);
-      setError(
-        "Không thể copy. Trình duyệt của bạn có thể không hỗ trợ tính năng này.",
-      );
+      setError("Không thể copy. Trình duyệt của bạn có thể không hỗ trợ tính năng này.");
       setTimeout(() => setError(null), 3000);
     }
   };

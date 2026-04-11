@@ -128,9 +128,7 @@ function PersonSelector({
           {selected ? selected.full_name : "Chọn thành viên..."}
         </span>
         {selected?.birth_year && (
-          <span className="text-xs text-stone-400 shrink-0">
-            ({selected.birth_year})
-          </span>
+          <span className="text-xs text-stone-400 shrink-0">({selected.birth_year})</span>
         )}
       </button>
 
@@ -157,9 +155,7 @@ function PersonSelector({
             </div>
             <div className="max-h-52 overflow-y-auto">
               {filtered.length === 0 ? (
-                <p className="text-center py-6 text-sm text-stone-400">
-                  Không tìm thấy
-                </p>
+                <p className="text-center py-6 text-sm text-stone-400">Không tìm thấy</p>
               ) : (
                 filtered.map((p) => (
                   <button
@@ -366,9 +362,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
             {/* Description badge */}
             <div className="bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 flex items-center gap-3">
               <Sparkles className="size-5 text-amber-500 shrink-0" />
-              <p className="text-amber-800 font-semibold">
-                {result.description}
-              </p>
+              <p className="text-amber-800 font-semibold">{result.description}</p>
             </div>
 
             {/* Main kinship cards */}
@@ -434,11 +428,10 @@ export default function KinshipFinder({ persons, relationships }: Props) {
             )}
 
             {/* Disclaimer for ambiguous terms */}
-            {(result.aCallsB.includes("/") ||
-              result.aCallsB.includes("họ hàng")) && (
+            {(result.aCallsB.includes("/") || result.aCallsB.includes("họ hàng")) && (
               <p className="text-xs text-stone-400 italic px-1">
-                * Danh xưng chính xác dựa trên giới tính, thứ tự sinh của các
-                nhánh và vế Nội/Ngoại.
+                * Danh xưng chính xác dựa trên giới tính, thứ tự sinh của các nhánh và vế
+                Nội/Ngoại.
               </p>
             )}
           </motion.div>
@@ -474,29 +467,29 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                   <ol className="space-y-2 text-sm text-blue-800">
                     <li className="flex gap-2">
                       <span className="font-bold shrink-0">1.</span>
-                      Hệ thống xây dựng đồ thị gia phả từ toàn bộ quan hệ huyết
-                      thống và hôn nhân.
+                      Hệ thống xây dựng đồ thị gia phả từ toàn bộ quan hệ huyết thống và
+                      hôn nhân.
                     </li>
                     <li className="flex gap-2">
                       <span className="font-bold shrink-0">2.</span>
-                      Tìm <strong>Tổ tiên chung gần nhất (LCA)</strong> để xác
-                      định khoảng cách thế hệ.
+                      Tìm <strong>Tổ tiên chung gần nhất (LCA)</strong> để xác định khoảng
+                      cách thế hệ.
                     </li>
                     <li className="flex gap-2">
                       <span className="font-bold shrink-0">3.</span>
-                      Xác định <strong>vế Nội/Ngoại</strong> dựa trên giới tính
-                      của tổ tiên tại điểm rẽ nhánh.
+                      Xác định <strong>vế Nội/Ngoại</strong> dựa trên giới tính của tổ
+                      tiên tại điểm rẽ nhánh.
                     </li>
                     <li className="flex gap-2">
                       <span className="font-bold shrink-0">4.</span>
-                      So sánh <strong>thứ bậc (seniority)</strong> giữa các
-                      nhanh từ tổ tiên chung để quyết định quan hệ
-                      &quot;Anh/Em&quot; hoặc &quot;Bác/Chú&quot;.
+                      So sánh <strong>thứ bậc (seniority)</strong> giữa các nhanh từ tổ
+                      tiên chung để quyết định quan hệ &quot;Anh/Em&quot; hoặc
+                      &quot;Bác/Chú&quot;.
                     </li>
                     <li className="flex gap-2">
                       <span className="font-bold shrink-0">5.</span>
-                      Tra bảng danh xưng tiếng Việt chuyên sâu bao gồm cả các
-                      mối quan hệ thông qua hôn nhân.
+                      Tra bảng danh xưng tiếng Việt chuyên sâu bao gồm cả các mối quan hệ
+                      thông qua hôn nhân.
                     </li>
                   </ol>
                 </div>
@@ -515,13 +508,12 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                     </li>
                     <li className="flex gap-2">
                       <span className="text-amber-400 shrink-0">•</span>
-                      <strong>Giới tính</strong> chính xác để phân biệt Cô/Dì,
-                      Chú/Cậu.
+                      <strong>Giới tính</strong> chính xác để phân biệt Cô/Dì, Chú/Cậu.
                     </li>
                     <li className="flex gap-2">
                       <span className="text-amber-400 shrink-0">•</span>
-                      <strong>Thứ tự sinh (Birth Order)</strong> là yếu tố then
-                      chốt để phân định thứ bậc Anh/Em trong dòng họ.
+                      <strong>Thứ tự sinh (Birth Order)</strong> là yếu tố then chốt để
+                      phân định thứ bậc Anh/Em trong dòng họ.
                     </li>
                   </ul>
                 </div>
@@ -544,9 +536,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                         </span>
                         <div className="min-w-0">
                           <p className="text-sm text-stone-600">{row.desc}</p>
-                          <p className="text-xs text-stone-400 mt-0.5">
-                            {row.example}
-                          </p>
+                          <p className="text-xs text-stone-400 mt-0.5">{row.example}</p>
                         </div>
                       </div>
                     ))}

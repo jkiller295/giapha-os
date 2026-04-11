@@ -31,8 +31,7 @@ export default function MissingDBConfigPage() {
                 Chưa kết nối cơ sở dữ liệu
               </h2>
               <p className="text-stone-500 font-medium">
-                Ứng dụng hiện chưa được cấu hình biến môi trường kết nối đến
-                Supabase.
+                Ứng dụng hiện chưa được cấu hình biến môi trường kết nối đến Supabase.
               </p>
             </div>
           </div>

@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { usePanZoom } from "@/hooks/usePanZoom";
 import { Person, Relationship } from "@/types";
@@ -41,9 +35,7 @@ export default function FamilyTree({
   // Tập hợp các personId đang bị đóng (collapsed)
   const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(new Set());
   const [hideExpandButtons, setHideExpandButtons] = useState(false);
-  const [autoCollapseLevel, setAutoCollapseLevel] = useState(
-    DEFAULT_AUTO_COLLAPSE_LEVEL,
-  );
+  const [autoCollapseLevel, setAutoCollapseLevel] = useState(DEFAULT_AUTO_COLLAPSE_LEVEL);
 
   const { showAvatar } = useDashboard();
 
@@ -175,9 +167,7 @@ export default function FamilyTree({
         autoCollapsed.add(personId);
       }
 
-      data.children.forEach((child) =>
-        walk(child.id, new Set(visited), level + 1),
-      );
+      data.children.forEach((child) => walk(child.id, new Set(visited), level + 1));
     };
 
     roots.forEach((root) => walk(root.id, new Set(), 0));
@@ -292,11 +282,7 @@ export default function FamilyTree({
   };
 
   if (roots.length === 0)
-    return (
-      <div className="text-center p-10 text-stone-500">
-        Không tìm thấy dữ liệu.
-      </div>
-    );
+    return <div className="text-center p-10 text-stone-500">Không tìm thấy dữ liệu.</div>;
 
   return (
     <div className="w-full h-full relative">
@@ -429,9 +415,7 @@ export default function FamilyTree({
         >
           <ul>
             {roots.map((root) => (
-              <React.Fragment key={root.id}>
-                {renderTreeNode(root.id)}
-              </React.Fragment>
+              <React.Fragment key={root.id}>{renderTreeNode(root.id)}</React.Fragment>
             ))}
           </ul>
         </div>

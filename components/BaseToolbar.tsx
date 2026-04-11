@@ -58,10 +58,7 @@ export default function BaseToolbar({
     const timer = setTimeout(() => setMounted(true), 0);
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        filtersRef.current &&
-        !filtersRef.current.contains(event.target as Node)
-      ) {
+      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
         setShowFilters(false);
       }
     };

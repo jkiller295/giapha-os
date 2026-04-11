@@ -42,9 +42,7 @@ export default function CustomEventModal({
   const [lunarDay, setLunarDay] = useState<number | "">("");
   const [lunarMonth, setLunarMonth] = useState<number | "">("");
   const [lunarYear, setLunarYear] = useState<number | "">("");
-  const [lunarConvertError, setLunarConvertError] = useState<string | null>(
-    null,
-  );
+  const [lunarConvertError, setLunarConvertError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -134,9 +132,7 @@ export default function CustomEventModal({
           .eq("id", eventToEdit.id);
         resultError = err;
       } else {
-        const { error: err } = await supabase
-          .from("custom_events")
-          .insert([payload]);
+        const { error: err } = await supabase.from("custom_events").insert([payload]);
         resultError = err;
       }
 
@@ -278,9 +274,7 @@ export default function CustomEventModal({
                       <button
                         type="button"
                         onClick={() => {
-                          setDateMode((m) =>
-                            m === "solar" ? "lunar" : "solar",
-                          );
+                          setDateMode((m) => (m === "solar" ? "lunar" : "solar"));
                           setLunarConvertError(null);
                         }}
                         className="flex items-center gap-1.5 text-xs font-medium text-stone-500 hover:text-amber-700 transition-colors px-2.5 py-1 rounded-lg bg-stone-50 hover:bg-amber-50 border border-stone-200/60"
@@ -320,9 +314,7 @@ export default function CustomEventModal({
                             max="30"
                             value={lunarDay}
                             onChange={(e) =>
-                              setLunarDay(
-                                e.target.value ? Number(e.target.value) : "",
-                              )
+                              setLunarDay(e.target.value ? Number(e.target.value) : "")
                             }
                             className={inputClasses}
                           />
@@ -333,9 +325,7 @@ export default function CustomEventModal({
                             max="12"
                             value={lunarMonth}
                             onChange={(e) =>
-                              setLunarMonth(
-                                e.target.value ? Number(e.target.value) : "",
-                              )
+                              setLunarMonth(e.target.value ? Number(e.target.value) : "")
                             }
                             className={inputClasses}
                           />
@@ -344,9 +334,7 @@ export default function CustomEventModal({
                             placeholder="Năm"
                             value={lunarYear}
                             onChange={(e) =>
-                              setLunarYear(
-                                e.target.value ? Number(e.target.value) : "",
-                              )
+                              setLunarYear(e.target.value ? Number(e.target.value) : "")
                             }
                             className={inputClasses}
                           />
@@ -432,11 +420,7 @@ export default function CustomEventModal({
                     >
                       Huỷ bỏ
                     </button>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="btn-primary"
-                    >
+                    <button type="submit" disabled={loading} className="btn-primary">
                       {loading && <Loader2 className="size-4 animate-spin" />}
                       {loading ? "Đang lưu..." : "Lưu sự kiện"}
                     </button>

@@ -40,9 +40,7 @@ export default async function FamilyTreePage({ searchParams }: PageProps) {
 
   const childIds = new Set(
     relationships
-      .filter(
-        (r) => r.type === "biological_child" || r.type === "adopted_child",
-      )
+      .filter((r) => r.type === "biological_child" || r.type === "adopted_child")
       .map((r) => r.person_b),
   );
 
@@ -65,11 +63,7 @@ export default async function FamilyTreePage({ searchParams }: PageProps) {
       initialShowAvatar={initialShowAvatar}
     >
       <ViewToggle />
-      <DashboardViews
-        persons={persons}
-        relationships={relationships}
-        canEdit={canEdit}
-      />
+      <DashboardViews persons={persons} relationships={relationships} canEdit={canEdit} />
 
       <MemberDetailModal />
     </DashboardProvider>

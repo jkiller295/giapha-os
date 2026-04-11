@@ -17,9 +17,7 @@ interface DashboardState {
   setRootId: (id: string | null) => void;
 }
 
-export const DashboardContext = createContext<DashboardState | undefined>(
-  undefined,
-);
+export const DashboardContext = createContext<DashboardState | undefined>(undefined);
 
 export function DashboardProvider({
   children,
@@ -43,8 +41,7 @@ export function DashboardProvider({
     () => initialShowAvatar ?? searchParams.get("avatar") !== "hide",
   );
   const [view, setViewState] = useState<ViewMode>(
-    () =>
-      initialView ?? (searchParams.get("view") as ViewMode | null) ?? "list",
+    () => initialView ?? (searchParams.get("view") as ViewMode | null) ?? "list",
   );
   const [rootId, setRootIdState] = useState<string | null>(
     () => initialRootId ?? searchParams.get("rootId") ?? null,

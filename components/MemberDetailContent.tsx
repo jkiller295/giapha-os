@@ -259,9 +259,7 @@ export default function MemberDetailContent({
                     )}
                   </p>
                   {isAdmin &&
-                    (person.birth_year ||
-                      person.birth_month ||
-                      person.birth_day) && (
+                    (person.birth_year || person.birth_month || person.birth_day) && (
                       <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
                         <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">
                           Âm lịch
@@ -290,9 +288,7 @@ export default function MemberDetailContent({
                   </div>
                   <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
                     <p className="text-stone-800 font-semibold text-sm sm:text-base">
-                      {person.death_day ||
-                      person.death_month ||
-                      person.death_year
+                      {person.death_day || person.death_month || person.death_year
                         ? formatDisplayDate(
                             person.death_year,
                             person.death_month,
@@ -437,8 +433,7 @@ export default function MemberDetailContent({
                       )}
 
                       {/* In-Laws */}
-                      {(relStats.sonInLaw > 0 ||
-                        relStats.daughterInLaw > 0) && (
+                      {(relStats.sonInLaw > 0 || relStats.daughterInLaw > 0) && (
                         <div className="bg-stone-50/80 rounded-xl p-3 border border-stone-100 flex flex-col group hover:bg-stone-100/80 transition-colors">
                           <div className="flex items-center gap-3 mb-2">
                             <div className="p-2 bg-stone-200/50 text-stone-600 rounded-lg group-hover:bg-stone-200 transition-colors">
@@ -462,9 +457,7 @@ export default function MemberDetailContent({
                             )}
                             {relStats.sonInLaw > 0 && (
                               <div className="flex items-center justify-between text-xs">
-                                <span className="text-stone-500 font-medium">
-                                  Con rể
-                                </span>
+                                <span className="text-stone-500 font-medium">Con rể</span>
                                 <span className="font-bold text-stone-700">
                                   {relStats.sonInLaw}
                                 </span>
@@ -532,8 +525,7 @@ export default function MemberDetailContent({
                     <motion.div
                       initial={false}
                       animate={{
-                        height:
-                          !isNoteExpanded && isNoteLong ? "120px" : "auto",
+                        height: !isNoteExpanded && isNoteLong ? "120px" : "auto",
                       }}
                       className="relative overflow-hidden"
                       transition={{

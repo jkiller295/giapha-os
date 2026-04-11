@@ -12,10 +12,7 @@ interface PersonCardProps {
   isDivorced?: boolean;
 }
 
-export default function PersonCard({
-  person,
-  isDivorced = false,
-}: PersonCardProps) {
+export default function PersonCard({ person, isDivorced = false }: PersonCardProps) {
   const { setMemberModalId } = useDashboard();
 
   const isDeceased = person.is_deceased;

@@ -18,12 +18,8 @@ export default async function EditMemberPage({ params }: PageProps) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-stone-800">
-            Truy cập bị từ chối
-          </h1>
-          <p className="text-stone-600 mt-2">
-            Bạn không có quyền chỉnh sửa thành viên.
-          </p>
+          <h1 className="text-2xl font-bold text-stone-800">Truy cập bị từ chối</h1>
+          <p className="text-stone-600 mt-2">Bạn không có quyền chỉnh sửa thành viên.</p>
         </div>
       </div>
     );
@@ -75,11 +71,7 @@ export default async function EditMemberPage({ params }: PageProps) {
       </div>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 relative z-10 w-full flex-1">
-        <MemberForm
-          initialData={initialData}
-          isEditing={true}
-          isAdmin={isAdmin}
-        />
+        <MemberForm initialData={initialData} isEditing={true} isAdmin={isAdmin} />
       </main>
     </div>
   );

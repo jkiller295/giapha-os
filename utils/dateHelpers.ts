@@ -123,10 +123,7 @@ export function calculateAge(
   return { age, isDeceased: false };
 }
 
-export function getZodiacSign(
-  day: number | null,
-  month: number | null,
-): string | null {
+export function getZodiacSign(day: number | null, month: number | null): string | null {
   if (!day || !month) return null;
   const d = day;
   const m = month;

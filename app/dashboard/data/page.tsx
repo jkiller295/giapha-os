@@ -20,9 +20,9 @@ export default async function DataManagementPage() {
           <div>
             <h1 className="title">Sao lưu & Phục hồi</h1>
             <p className="text-stone-500 mt-2 text-sm sm:text-base max-w-2xl">
-              Quản lý dữ liệu an toàn. Bạn có thể tải xuống bản sao lưu để lưu
-              trữ hoặc phục hồi lại dữ liệu từ file đã lưu. Tính năng này chỉ
-              dành cho Quản trị viên.
+              Quản lý dữ liệu an toàn. Bạn có thể tải xuống bản sao lưu để lưu trữ hoặc
+              phục hồi lại dữ liệu từ file đã lưu. Tính năng này chỉ dành cho Quản trị
+              viên.
             </p>
           </div>
         </div>

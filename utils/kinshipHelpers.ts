@@ -33,10 +33,7 @@ interface RelEdge {
  * So sánh thứ bậc giữa hai người (cùng bố mẹ hoặc cùng thế hệ)
  * Ưu tiên: Thứ tự sinh (birth_order) -> Năm sinh (birth_year)
  */
-function compareSeniority(
-  a: PersonNode,
-  b: PersonNode,
-): "senior" | "junior" | "equal" {
+function compareSeniority(a: PersonNode, b: PersonNode): "senior" | "junior" | "equal" {
   if (a.id === b.id) return "equal";
 
   if (a.birth_order != null && b.birth_order != null) {
@@ -54,29 +51,8 @@ function compareSeniority(
 
 // ── Vietnamese Terminology Constants ──────────────────────────────────────
 
-const ANCESTORS = [
-  "",
-  "Bố/Mẹ",
-  "Ông/Bà",
-  "Cụ",
-  "Kỵ",
-  "Sơ",
-  "Tiệm",
-  "Tiểu",
-  "Di",
-  "Diễn",
-];
-const DESCENDANTS = [
-  "",
-  "Con",
-  "Cháu",
-  "Chắt",
-  "Chít",
-  "Chút",
-  "Chét",
-  "Chót",
-  "Chẹt",
-];
+const ANCESTORS = ["", "Bố/Mẹ", "Ông/Bà", "Cụ", "Kỵ", "Sơ", "Tiệm", "Tiểu", "Di", "Diễn"];
+const DESCENDANTS = ["", "Con", "Cháu", "Chắt", "Chít", "Chút", "Chét", "Chót", "Chẹt"];
 
 /**
  * Lấy danh xưng trực hệ vế trên
@@ -233,17 +209,9 @@ function resolveBloodTerms(
     if (depthA === depthB) {
       // Cùng thế hệ
       if (seniority === "senior") {
-        return [
-          "Em họ",
-          genderA === "female" ? "Chị họ" : "Anh họ",
-          `Anh em họ ${side}`,
-        ];
+        return ["Em họ", genderA === "female" ? "Chị họ" : "Anh họ", `Anh em họ ${side}`];
       } else {
-        return [
-          genderB === "female" ? "Chị họ" : "Anh họ",
-          "Em họ",
-          `Anh em họ ${side}`,
-        ];
+        return [genderB === "female" ? "Chị họ" : "Anh họ", "Em họ", `Anh em họ ${side}`];
       }
     } else {
       // Lệch thế hệ
@@ -470,10 +438,7 @@ export function computeKinship(
         bCallsA = personA.gender === "male" ? "Con rể" : "Con dâu";
       } else if (res.bCallsA === "Cháu") {
         bCallsA = personA.gender === "male" ? "Cháu rể" : "Cháu dâu";
-      } else if (
-        res.bCallsA.includes("Anh trai") ||
-        res.bCallsA.includes("Chị gái")
-      ) {
+      } else if (res.bCallsA.includes("Anh trai") || res.bCallsA.includes("Chị gái")) {
         bCallsA = personA.gender === "male" ? "Anh rể" : "Chị dâu";
       } else if (res.bCallsA.includes("Em")) {
         bCallsA = personA.gender === "male" ? "Em rể" : "Em dâu";
@@ -503,8 +468,7 @@ export function computeKinship(
       } else if (res.bCallsA === "Ông Bác") {
         bCallsA = "Bà Bác";
       } else {
-        bCallsA =
-          (personA.gender === "male" ? "Chồng" : "Vợ") + " của " + res.bCallsA;
+        bCallsA = (personA.gender === "male" ? "Chồng" : "Vợ") + " của " + res.bCallsA;
       }
 
       return {
@@ -563,8 +527,7 @@ export function computeKinship(
       } else if (res.aCallsB === "Ông Bác") {
         aCallsB = "Bà Bác";
       } else {
-        aCallsB =
-          (personB.gender === "male" ? "Chồng" : "Vợ") + " của " + res.aCallsB;
+        aCallsB = (personB.gender === "male" ? "Chồng" : "Vợ") + " của " + res.aCallsB;
       }
 
       // --- B gọi A thông qua spouseB ---

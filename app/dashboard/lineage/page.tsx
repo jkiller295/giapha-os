@@ -32,8 +32,8 @@ export default async function LineagePage() {
             Tự động tính toán và cập nhật{" "}
             <strong className="text-stone-700">thế hệ</strong>,{" "}
             <strong className="text-stone-700">thứ tự sinh</strong> và{" "}
-            <strong className="text-stone-700">trạng thái Dâu/Rể</strong> cho
-            tất cả thành viên. Xem preview trước khi áp dụng.
+            <strong className="text-stone-700">trạng thái Dâu/Rể</strong> cho tất cả thành
+            viên. Xem preview trước khi áp dụng.
           </p>
         </div>
 
@@ -47,9 +47,9 @@ export default async function LineagePage() {
                   Thế hệ (Generation)
                 </h3>
                 <p className="text-stone-500 text-xs leading-relaxed">
-                  Dùng thuật toán BFS từ các tổ tiên gốc (người chưa có thông
-                  tin bố/mẹ trong hệ thống). Tổ tiên = Đời 1, con = Đời 2, cháu
-                  = Đời 3... Con dâu/rể kế thừa đời của người bạn đời.
+                  Dùng thuật toán BFS từ các tổ tiên gốc (người chưa có thông tin bố/mẹ
+                  trong hệ thống). Tổ tiên = Đời 1, con = Đời 2, cháu = Đời 3... Con
+                  dâu/rể kế thừa đời của người bạn đời.
                 </p>
               </div>
             </div>
@@ -62,9 +62,8 @@ export default async function LineagePage() {
                   Thứ tự sinh (Birth Order)
                 </h3>
                 <p className="text-stone-500 text-xs leading-relaxed">
-                  Trong danh sách anh/chị/em cùng cha, sắp xếp theo năm sinh
-                  tăng dần và gán số thứ tự 1, 2, 3... Con dâu/rể không được
-                  tính thứ tự.
+                  Trong danh sách anh/chị/em cùng cha, sắp xếp theo năm sinh tăng dần và
+                  gán số thứ tự 1, 2, 3... Con dâu/rể không được tính thứ tự.
                 </p>
               </div>
             </div>
@@ -75,9 +74,9 @@ export default async function LineagePage() {
                   Dâu / Rể (In-Law Status)
                 </h3>
                 <p className="text-stone-500 text-xs leading-relaxed">
-                  Tự động xác định là dâu/rể nếu thành viên có vợ/chồng trong hệ
-                  thống nhưng không có thông tin bố/mẹ. Giúp hiển thị đúng thẻ
-                  phân loại ngoài danh sách.
+                  Tự động xác định là dâu/rể nếu thành viên có vợ/chồng trong hệ thống
+                  nhưng không có thông tin bố/mẹ. Giúp hiển thị đúng thẻ phân loại ngoài
+                  danh sách.
                 </p>
               </div>
             </div>

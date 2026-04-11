@@ -91,9 +91,7 @@ export default function DataImportExport() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (error: unknown) {
-      setExportError(
-        error instanceof Error ? error.message : "Tải xuống thất bại.",
-      );
+      setExportError(error instanceof Error ? error.message : "Tải xuống thất bại.");
       setTimeout(() => setExportError(null), 5000);
     } finally {
       setIsExporting(false);
@@ -107,8 +105,7 @@ export default function DataImportExport() {
       if (fileName.endsWith(".csv")) {
         setImportStatus({
           type: "error",
-          message:
-            "Vui lòng phục hồi bằng file .zip được tạo ra từ chức năng Xuất CSV.",
+          message: "Vui lòng phục hồi bằng file .zip được tạo ra từ chức năng Xuất CSV.",
         });
         return;
       }
@@ -179,9 +176,7 @@ export default function DataImportExport() {
         `${result.imported?.relationships} quan hệ`,
       ];
       if (result.imported?.person_details_private) {
-        parts.push(
-          `${result.imported.person_details_private} thông tin riêng tư`,
-        );
+        parts.push(`${result.imported.person_details_private} thông tin riêng tư`);
       }
       if (result.imported?.custom_events) {
         parts.push(`${result.imported.custom_events} sự kiện`);
@@ -198,9 +193,7 @@ export default function DataImportExport() {
       setImportStatus({
         type: "error",
         message:
-          error instanceof Error
-            ? error.message
-            : "Quá trình phục hồi đã xảy ra lỗi.",
+          error instanceof Error ? error.message : "Quá trình phục hồi đã xảy ra lỗi.",
       });
       setShowConfirm(false);
       setSelectedFile(null);
@@ -225,13 +218,11 @@ export default function DataImportExport() {
               <Download className="size-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-stone-800">
-                Sao lưu dữ liệu
-              </h3>
+              <h3 className="text-lg font-bold text-stone-800">Sao lưu dữ liệu</h3>
               <p className="text-sm text-stone-500 mt-1">
-                Tải xuống định dạng file JSON, GEDCOM hoặc CSV (Zip). Chọn một
-                điểm gốc bên dưới để chỉ sao lưu nhánh gia đình đó, hoặc chọn
-                &quot;Toàn bộ&quot; để xuất toàn bộ cây.
+                Tải xuống định dạng file JSON, GEDCOM hoặc CSV (Zip). Chọn một điểm gốc
+                bên dưới để chỉ sao lưu nhánh gia đình đó, hoặc chọn &quot;Toàn bộ&quot;
+                để xuất toàn bộ cây.
               </p>
             </div>
           </div>
@@ -301,12 +292,9 @@ export default function DataImportExport() {
               <Upload className="size-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-stone-800">
-                Phục hồi dữ liệu
-              </h3>
+              <h3 className="text-lg font-bold text-stone-800">Phục hồi dữ liệu</h3>
               <p className="text-sm text-stone-500 mt-1">
-                Khôi phục cây gia phả từ file đã sao lưu (.json, .ged, hoặc
-                .zip).
+                Khôi phục cây gia phả từ file đã sao lưu (.json, .ged, hoặc .zip).
                 <span className="font-semibold text-rose-600 ml-1">
                   Cảnh báo: Tác vụ này sẽ xoá toàn bộ dữ liệu hiện tại!
                 </span>
@@ -353,14 +341,12 @@ export default function DataImportExport() {
                   <AlertTriangle className="size-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-stone-800">
-                    Xác nhận phục hồi
-                  </h3>
+                  <h3 className="text-lg font-bold text-stone-800">Xác nhận phục hồi</h3>
                   <p className="text-sm text-stone-600 mt-2 leading-relaxed">
                     Hệ thống sẽ xoá{" "}
                     <b>
-                      toàn bộ dữ liệu thành viên, mối quan hệ, thông tin riêng
-                      tư và sự kiện hiện tại
+                      toàn bộ dữ liệu thành viên, mối quan hệ, thông tin riêng tư và sự
+                      kiện hiện tại
                     </b>{" "}
                     để thay thế bằng dữ liệu từ file{" "}
                     <span className="font-mono text-xs bg-stone-100 px-1 rounded">

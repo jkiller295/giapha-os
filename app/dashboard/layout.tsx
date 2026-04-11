@@ -59,13 +59,12 @@ export default async function DashboardLayout({
               Tài khoản chờ duyệt
             </h2>
             <p className="text-stone-600">
-              Tài khoản của bạn đã được đăng ký thành công. Tuy nhiên, hệ thống
-              yêu cầu Quản trị viên kích hoạt tài khoản của bạn trước khi bạn có
-              thể xem các thông tin gia đình.
+              Tài khoản của bạn đã được đăng ký thành công. Tuy nhiên, hệ thống yêu cầu
+              Quản trị viên kích hoạt tài khoản của bạn trước khi bạn có thể xem các thông
+              tin gia đình.
             </p>
             <p className="text-stone-500 text-sm mt-4 italic">
-              Vui lòng liên hệ lại với người quản trị dòng họ để được cấp quyền
-              sớm nhất.
+              Vui lòng liên hệ lại với người quản trị dòng họ để được cấp quyền sớm nhất.
             </p>
           </div>
         </main>

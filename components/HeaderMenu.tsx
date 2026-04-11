@@ -64,9 +64,7 @@ export default function HeaderMenu() {
               <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-0.5">
                 Tài khoản
               </p>
-              <p className="text-sm font-medium text-stone-900 truncate">
-                {userEmail}
-              </p>
+              <p className="text-sm font-medium text-stone-900 truncate">{userEmail}</p>
             </div>
 
             <div className="py-1">

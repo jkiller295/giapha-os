@@ -146,14 +146,11 @@ export async function exportData(
     )
     .order("created_at", { ascending: true });
 
-  if (personsError)
-    return { error: "Lỗi tải dữ liệu persons: " + personsError.message };
+  if (personsError) return { error: "Lỗi tải dữ liệu persons: " + personsError.message };
 
   const { data: allRels, error: relationshipsError } = await supabase
     .from("relationships")
-    .select(
-      "id, type, person_a, person_b, note, is_divorced, created_at, updated_at",
-    )
+    .select("id, type, person_a, person_b, note, is_divorced, created_at, updated_at")
     .order("created_at", { ascending: true });
 
   if (relationshipsError)
@@ -167,9 +164,7 @@ export async function exportData(
 
   if (privateDetailsError)
     return {
-      error:
-        "Lỗi tải dữ liệu person_details_private: " +
-        privateDetailsError.message,
+      error: "Lỗi tải dữ liệu person_details_private: " + privateDetailsError.message,
     };
 
   const { data: allCustomEvents, error: customEventsError } = await supabase
@@ -184,8 +179,7 @@ export async function exportData(
 
   let exportPersons = (allPersons ?? []) as PersonExport[];
   let exportRels = (allRels ?? []) as RelationshipExport[];
-  let exportPrivateDetails = (allPrivateDetails ??
-    []) as PersonDetailsPrivateExport[];
+  let exportPrivateDetails = (allPrivateDetails ?? []) as PersonDetailsPrivateExport[];
   const exportCustomEvents = (allCustomEvents ?? []) as CustomEventExport[];
 
   // If a root person is selected, filter the export to only their subtree
@@ -215,8 +209,7 @@ export async function exportData(
       exportRels
         .filter(
           (r) =>
-            r.type === "marriage" &&
-            (r.person_a === personId || r.person_b === personId),
+            r.type === "marriage" && (r.person_a === personId || r.person_b === personId),
         )
         .forEach((r) => {
           const spouseId = r.person_a === personId ? r.person_b : r.person_a;
@@ -227,8 +220,7 @@ export async function exportData(
     // 3. Filter the payload
     exportPersons = exportPersons.filter((p) => includedPersonIds.has(p.id));
     exportRels = exportRels.filter(
-      (r) =>
-        includedPersonIds.has(r.person_a) && includedPersonIds.has(r.person_b),
+      (r) => includedPersonIds.has(r.person_a) && includedPersonIds.has(r.person_b),
     );
     exportPrivateDetails = exportPrivateDetails.filter((d) =>
       includedPersonIds.has(d.person_id),
@@ -303,8 +295,7 @@ export async function importData(
 
   if (delPrivateError)
     return {
-      error:
-        "Lỗi khi xoá person_details_private cũ: " + delPrivateError.message,
+      error: "Lỗi khi xoá person_details_private cũ: " + delPrivateError.message,
     };
 
   // 4. Xoá persons
@@ -350,9 +341,7 @@ export async function importData(
   if (privateDetails.length > 0) {
     for (let i = 0; i < privateDetails.length; i += CHUNK) {
       const chunk = privateDetails.slice(i, i + CHUNK);
-      const { error } = await supabase
-        .from("person_details_private")
-        .insert(chunk);
+      const { error } = await supabase.from("person_details_private").insert(chunk);
       if (error)
         return {
           error: `Lỗi khi import person_details_private (chunk ${i / CHUNK + 1}): ${error.message}`,
@@ -363,9 +352,7 @@ export async function importData(
 
   // 8. Insert custom_events (if present in payload, strip created_by)
   let customEventsCount = 0;
-  const customEvents = (importPayload.custom_events ?? []).map(
-    sanitizeCustomEvent,
-  );
+  const customEvents = (importPayload.custom_events ?? []).map(sanitizeCustomEvent);
   if (customEvents.length > 0) {
     for (let i = 0; i < customEvents.length; i += CHUNK) {
       const chunk = customEvents.slice(i, i + CHUNK);

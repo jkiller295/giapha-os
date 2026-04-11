@@ -45,25 +45,17 @@ export default function MemberForm({
   const [fullName, setFullName] = useState(initialData?.full_name || "");
   const [otherNames, setOtherNames] = useState(initialData?.other_names || "");
   const [gender, setGender] = useState<Gender>(initialData?.gender || "male");
-  const [birthYear, setBirthYear] = useState<number | "">(
-    initialData?.birth_year || "",
-  );
+  const [birthYear, setBirthYear] = useState<number | "">(initialData?.birth_year || "");
   const [birthMonth, setBirthMonth] = useState<number | "">(
     initialData?.birth_month || "",
   );
-  const [birthDay, setBirthDay] = useState<number | "">(
-    initialData?.birth_day || "",
-  );
+  const [birthDay, setBirthDay] = useState<number | "">(initialData?.birth_day || "");
 
-  const [deathYear, setDeathYear] = useState<number | "">(
-    initialData?.death_year || "",
-  );
+  const [deathYear, setDeathYear] = useState<number | "">(initialData?.death_year || "");
   const [deathMonth, setDeathMonth] = useState<number | "">(
     initialData?.death_month || "",
   );
-  const [deathDay, setDeathDay] = useState<number | "">(
-    initialData?.death_day || "",
-  );
+  const [deathDay, setDeathDay] = useState<number | "">(initialData?.death_day || "");
 
   const [deathLunarYear, setDeathLunarYear] = useState<number | "">(
     initialData?.death_lunar_year || "",
@@ -78,9 +70,7 @@ export default function MemberForm({
   const [isDeceased, setIsDeceased] = useState<boolean>(
     initialData?.is_deceased || false,
   );
-  const [isInLaw, setIsInLaw] = useState<boolean>(
-    initialData?.is_in_law || false,
-  );
+  const [isInLaw, setIsInLaw] = useState<boolean>(initialData?.is_in_law || false);
 
   const [birthOrder, setBirthOrder] = useState<number | "">(
     initialData?.birth_order || "",
@@ -98,9 +88,7 @@ export default function MemberForm({
   const [note, setNote] = useState(initialData?.note || "");
 
   // Private fields
-  const [phoneNumber, setPhoneNumber] = useState(
-    initialData?.phone_number ?? "",
-  );
+  const [phoneNumber, setPhoneNumber] = useState(initialData?.phone_number ?? "");
   const [occupation, setOccupation] = useState(initialData?.occupation ?? "");
   const [currentResidence, setCurrentResidence] = useState(
     initialData?.current_residence ?? "",
@@ -118,10 +106,7 @@ export default function MemberForm({
       .replace(/^-+|-+$/g, "");
   };
 
-  const handleSolarDeathChange = (
-    field: "day" | "month" | "year",
-    val: string,
-  ) => {
+  const handleSolarDeathChange = (field: "day" | "month" | "year", val: string) => {
     const num = val ? Number(val) : "";
     let d = deathDay;
     let m = deathMonth;
@@ -151,10 +136,7 @@ export default function MemberForm({
     }
   };
 
-  const handleLunarDeathChange = (
-    field: "day" | "month" | "year",
-    val: string,
-  ) => {
+  const handleLunarDeathChange = (field: "day" | "month" | "year", val: string) => {
     const num = val ? Number(val) : "";
     let d = deathLunarDay;
     let m = deathLunarMonth;
@@ -190,11 +172,7 @@ export default function MemberForm({
     setError(null);
 
     // Validation
-    const isValidDate = (
-      day: number | "",
-      month: number | "",
-      year: number | "",
-    ) => {
+    const isValidDate = (day: number | "", month: number | "", year: number | "") => {
       if (day !== "" && (day < 1 || day > 31)) return false;
       if (month !== "" && (month < 1 || month > 12)) return false;
       if (year !== "" && year < 1) return false;
@@ -228,11 +206,7 @@ export default function MemberForm({
       (deathDay === "" || deathMonth === "" || deathYear === "")
     ) {
       try {
-        const lunarDate = Lunar.fromYmd(
-          deathLunarYear,
-          deathLunarMonth,
-          deathLunarDay,
-        );
+        const lunarDate = Lunar.fromYmd(deathLunarYear, deathLunarMonth, deathLunarDay);
         const solarDate = lunarDate.getSolar();
         finalDeathDay = solarDate.getDay();
         finalDeathMonth = solarDate.getMonth();
@@ -269,10 +243,7 @@ export default function MemberForm({
       finalDeathLunarYear = "";
     }
 
-    if (
-      isDeceased &&
-      !isValidDate(finalDeathDay, finalDeathMonth, finalDeathYear)
-    ) {
+    if (isDeceased && !isValidDate(finalDeathDay, finalDeathMonth, finalDeathYear)) {
       setError("Ngày mất không hợp lệ. Vui lòng kiểm tra lại.");
       setLoading(false);
       return;
@@ -299,24 +270,16 @@ export default function MemberForm({
         birth_year: birthYear === "" ? null : Number(birthYear),
         birth_month: birthMonth === "" ? null : Number(birthMonth),
         birth_day: birthDay === "" ? null : Number(birthDay),
-        death_year:
-          isDeceased && finalDeathYear !== "" ? Number(finalDeathYear) : null,
+        death_year: isDeceased && finalDeathYear !== "" ? Number(finalDeathYear) : null,
         death_month:
           isDeceased && finalDeathMonth !== "" ? Number(finalDeathMonth) : null,
-        death_day:
-          isDeceased && finalDeathDay !== "" ? Number(finalDeathDay) : null,
+        death_day: isDeceased && finalDeathDay !== "" ? Number(finalDeathDay) : null,
         death_lunar_year:
-          isDeceased && finalDeathLunarYear !== ""
-            ? Number(finalDeathLunarYear)
-            : null,
+          isDeceased && finalDeathLunarYear !== "" ? Number(finalDeathLunarYear) : null,
         death_lunar_month:
-          isDeceased && finalDeathLunarMonth !== ""
-            ? Number(finalDeathLunarMonth)
-            : null,
+          isDeceased && finalDeathLunarMonth !== "" ? Number(finalDeathLunarMonth) : null,
         death_lunar_day:
-          isDeceased && finalDeathLunarDay !== ""
-            ? Number(finalDeathLunarDay)
-            : null,
+          isDeceased && finalDeathLunarDay !== "" ? Number(finalDeathLunarDay) : null,
         is_deceased: isDeceased,
         is_in_law: isInLaw,
         birth_order: birthOrder === "" ? null : Number(birthOrder),
@@ -403,8 +366,7 @@ export default function MemberForm({
         }
       }
       // After save: use callback if provided, otherwise fall back to page navigation
-      if (!currentPersonId)
-        throw new Error("Không lấy được ID thành viên sau khi lưu.");
+      if (!currentPersonId) throw new Error("Không lấy được ID thành viên sau khi lưu.");
       if (onSuccess) {
         onSuccess(currentPersonId);
       } else {
@@ -621,14 +583,11 @@ export default function MemberForm({
                         ) {
                           try {
                             // Extract just the filename from the end of the URL
-                            const fileName = initialData.avatar_url
-                              .split("/")
-                              .pop();
+                            const fileName = initialData.avatar_url.split("/").pop();
                             if (fileName) {
-                              const { error: removeError } =
-                                await supabase.storage
-                                  .from("avatars")
-                                  .remove([fileName]);
+                              const { error: removeError } = await supabase.storage
+                                .from("avatars")
+                                .remove([fileName]);
                               if (removeError) {
                                 console.error(
                                   "Error removing avatar from storage:",
@@ -637,10 +596,7 @@ export default function MemberForm({
                               }
                             }
                           } catch (err) {
-                            console.error(
-                              "Failed to parse avatar URL for deletion",
-                              err,
-                            );
+                            console.error("Failed to parse avatar URL for deletion", err);
                           }
                         }
 
@@ -758,8 +714,8 @@ export default function MemberForm({
                   className="overflow-hidden"
                 >
                   <p className="text-[13px] text-stone-500 mb-4 italic">
-                    * Nhập Ngày Dương lịch hoặc Ngày Âm lịch. Hệ thống sẽ tự
-                    động tính toán và điền phần còn lại.
+                    * Nhập Ngày Dương lịch hoặc Ngày Âm lịch. Hệ thống sẽ tự động tính
+                    toán và điền phần còn lại.
                   </p>
 
                   <div className="flex flex-col gap-5">
@@ -775,9 +731,7 @@ export default function MemberForm({
                           min="1"
                           max="31"
                           value={deathLunarDay}
-                          onChange={(e) =>
-                            handleLunarDeathChange("day", e.target.value)
-                          }
+                          onChange={(e) => handleLunarDeathChange("day", e.target.value)}
                           className={inputClasses}
                         />
                         <input
@@ -795,9 +749,7 @@ export default function MemberForm({
                           type="number"
                           placeholder="Năm"
                           value={deathLunarYear}
-                          onChange={(e) =>
-                            handleLunarDeathChange("year", e.target.value)
-                          }
+                          onChange={(e) => handleLunarDeathChange("year", e.target.value)}
                           className={inputClasses}
                         />
                       </div>
@@ -815,9 +767,7 @@ export default function MemberForm({
                           min="1"
                           max="31"
                           value={deathDay}
-                          onChange={(e) =>
-                            handleSolarDeathChange("day", e.target.value)
-                          }
+                          onChange={(e) => handleSolarDeathChange("day", e.target.value)}
                           className={inputClasses}
                         />
                         <input
@@ -835,9 +785,7 @@ export default function MemberForm({
                           type="number"
                           placeholder="Năm"
                           value={deathYear}
-                          onChange={(e) =>
-                            handleSolarDeathChange("year", e.target.value)
-                          }
+                          onChange={(e) => handleSolarDeathChange("year", e.target.value)}
                           className={inputClasses}
                         />
                       </div>
@@ -964,11 +912,7 @@ export default function MemberForm({
         </button>
         <button type="submit" disabled={loading} className="btn-primary">
           {loading && <Loader2 className="size-4 animate-spin" />}
-          {loading
-            ? "Đang lưu..."
-            : isEditing
-              ? "Lưu thay đổi"
-              : "Thêm thành viên"}
+          {loading ? "Đang lưu..." : isEditing ? "Lưu thay đổi" : "Thêm thành viên"}
         </button>
       </motion.div>
     </form>

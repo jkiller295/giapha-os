@@ -57,18 +57,15 @@ export default function RelationshipManager({
     }
   };
 
-  const [relationships, setRelationships] = useState<EnrichedRelationship[]>(
-    [],
-  );
+  const [relationships, setRelationships] = useState<EnrichedRelationship[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Add Relationship State
   const [isAdding, setIsAdding] = useState(false);
-  const [newRelType, setNewRelType] =
-    useState<RelationshipType>("biological_child");
-  const [newRelDirection, setNewRelDirection] = useState<
-    "parent" | "child" | "spouse"
-  >("parent");
+  const [newRelType, setNewRelType] = useState<RelationshipType>("biological_child");
+  const [newRelDirection, setNewRelDirection] = useState<"parent" | "child" | "spouse">(
+    "parent",
+  );
   const [newRelNote, setNewRelNote] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<Person[]>([]);
@@ -215,13 +212,10 @@ export default function RelationshipManager({
         ).length;
 
         const daughterInLaw = formattedRels.filter(
-          (r) =>
-            r.direction === "child_in_law" &&
-            r.targetPerson.gender === "female",
+          (r) => r.direction === "child_in_law" && r.targetPerson.gender === "female",
         ).length;
         const sonInLaw = formattedRels.filter(
-          (r) =>
-            r.direction === "child_in_law" && r.targetPerson.gender === "male",
+          (r) => r.direction === "child_in_law" && r.targetPerson.gender === "male",
         ).length;
 
         // Fetch Grandchildren mapping
@@ -236,15 +230,11 @@ export default function RelationshipManager({
 
           if (grandchildrenData) {
             const maleChildrenIds = formattedRels
-              .filter(
-                (r) =>
-                  r.direction === "child" && r.targetPerson.gender === "male",
-              )
+              .filter((r) => r.direction === "child" && r.targetPerson.gender === "male")
               .map((r) => r.targetPerson.id);
             const femaleChildrenIds = formattedRels
               .filter(
-                (r) =>
-                  r.direction === "child" && r.targetPerson.gender === "female",
+                (r) => r.direction === "child" && r.targetPerson.gender === "female",
               )
               .map((r) => r.targetPerson.id);
 
@@ -374,12 +364,10 @@ export default function RelationshipManager({
           const updates: { generation?: number; is_in_law?: boolean } = {};
 
           if (targetPerson.generation == null && person.generation != null) {
-            if (newRelDirection === "child")
-              updates.generation = person.generation + 1;
+            if (newRelDirection === "child") updates.generation = person.generation + 1;
             else if (newRelDirection === "parent")
               updates.generation = person.generation - 1;
-            else if (newRelDirection === "spouse")
-              updates.generation = person.generation;
+            else if (newRelDirection === "spouse") updates.generation = person.generation;
           }
 
           if (targetPerson.is_in_law == null) {
@@ -390,10 +378,7 @@ export default function RelationshipManager({
           }
 
           if (Object.keys(updates).length > 0) {
-            await supabase
-              .from("persons")
-              .update(updates)
-              .eq("id", selectedTargetId);
+            await supabase.from("persons").update(updates).eq("id", selectedTargetId);
           }
         }
       } catch (err) {
@@ -601,10 +586,7 @@ export default function RelationshipManager({
   const handleDelete = async (relId: string) => {
     if (!confirm("Bạn có chắc chắn muốn xóa mối quan hệ này?")) return;
     try {
-      const { error } = await supabase
-        .from("relationships")
-        .delete()
-        .eq("id", relId);
+      const { error } = await supabase.from("relationships").delete().eq("id", relId);
       if (error) throw error;
       fetchRelationships();
       router.refresh();
@@ -644,11 +626,7 @@ export default function RelationshipManager({
       });
 
   if (loading)
-    return (
-      <div className="text-stone-500 text-sm">
-        Đang tải thông tin gia đình...
-      </div>
-    );
+    return <div className="text-stone-500 text-sm">Đang tải thông tin gia đình...</div>;
 
   return (
     <div className="space-y-6">
@@ -664,20 +642,14 @@ export default function RelationshipManager({
         if (items.length === 0 && !isAdmin) return null; // Hide empty sections for members? Or show empty state?
 
         return (
-          <div
-            key={group}
-            className="border-b border-stone-100 pb-4 last:border-0"
-          >
+          <div key={group} className="border-b border-stone-100 pb-4 last:border-0">
             <h4 className="font-bold text-stone-700 mb-3 flex justify-between items-center text-sm uppercase tracking-wide">
               {title}
             </h4>
             {items.length > 0 ? (
               <ul className="space-y-3">
                 {items.map((rel) => (
-                  <li
-                    key={rel.id}
-                    className="flex items-center justify-between group"
-                  >
+                  <li key={rel.id} className="flex items-center justify-between group">
                     <button
                       onClick={() => handlePersonClick(rel.targetPerson.id)}
                       className="flex items-center gap-3 hover:bg-stone-100 p-2.5 -mx-2.5 rounded-xl transition-all duration-200 flex-1 text-left"
@@ -696,10 +668,7 @@ export default function RelationshipManager({
                             height={32}
                           />
                         ) : (
-                          <DefaultAvatar
-                            gender={rel.targetPerson.gender}
-                            size={32}
-                          />
+                          <DefaultAvatar gender={rel.targetPerson.gender} size={32} />
                         )}
                       </div>
                       <div className="flex flex-col">
@@ -736,23 +705,15 @@ export default function RelationshipManager({
                     </button>
                     {canEdit && rel.direction === "spouse" && (
                       <button
-                        onClick={() =>
-                          handleToggleDivorced(rel.id, !!rel.is_divorced)
-                        }
+                        onClick={() => handleToggleDivorced(rel.id, !!rel.is_divorced)}
                         className={`p-2 sm:p-2.5 rounded-lg transition-colors flex items-center justify-center ml-1 text-xs font-bold border ${
                           rel.is_divorced
                             ? "text-red-600 bg-red-50 border-red-200 hover:bg-red-100"
                             : "text-stone-400 bg-stone-50 border-stone-200 hover:text-red-500 hover:bg-red-50 hover:border-red-200"
                         }`}
-                        title={
-                          rel.is_divorced
-                            ? "Bỏ đánh dấu ly hôn"
-                            : "Đánh dấu ly hôn"
-                        }
+                        title={rel.is_divorced ? "Bỏ đánh dấu ly hôn" : "Đánh dấu ly hôn"}
                         aria-label={
-                          rel.is_divorced
-                            ? "Bỏ đánh dấu ly hôn"
-                            : "Đánh dấu ly hôn"
+                          rel.is_divorced ? "Bỏ đánh dấu ly hôn" : "Đánh dấu ly hôn"
                         }
                       >
                         <svg
@@ -800,9 +761,7 @@ export default function RelationshipManager({
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-stone-400 italic">
-                Chưa có thông tin.
-              </p>
+              <p className="text-xs text-stone-400 italic">Chưa có thông tin.</p>
             )}
           </div>
         );
@@ -876,9 +835,7 @@ export default function RelationshipManager({
       {/* Add Form (Admin) */}
       {canEdit && isAdding && (
         <div className="mt-4 bg-stone-50/50 p-4 sm:p-5 rounded-xl border border-stone-200 shadow-sm">
-          <h4 className="font-bold text-stone-800 mb-3 text-sm">
-            Thêm Quan Hệ Mới
-          </h4>
+          <h4 className="font-bold text-stone-800 mb-3 text-sm">Thêm Quan Hệ Mới</h4>
 
           <div className="space-y-3">
             <div>
@@ -911,9 +868,7 @@ export default function RelationshipManager({
                 name="rel-direction"
                 value={newRelDirection}
                 onChange={(e) =>
-                  setNewRelDirection(
-                    e.target.value as "parent" | "child" | "spouse",
-                  )
+                  setNewRelDirection(e.target.value as "parent" | "child" | "spouse")
                 }
                 className="bg-white text-stone-900 block w-full max-w-full text-sm rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
               >
@@ -936,9 +891,7 @@ export default function RelationshipManager({
                   id="rel-type"
                   name="rel-type"
                   value={newRelType}
-                  onChange={(e) =>
-                    setNewRelType(e.target.value as RelationshipType)
-                  }
+                  onChange={(e) => setNewRelType(e.target.value as RelationshipType)}
                   className="bg-white text-stone-900 block w-full max-w-full text-sm rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
                 >
                   <option value="biological_child">Con ruột</option>
@@ -974,10 +927,7 @@ export default function RelationshipManager({
                       ? "Kết quả tìm kiếm"
                       : "Thành viên vừa thêm gần đây"}
                   </div>
-                  {(searchResults.length > 0
-                    ? searchResults
-                    : recentMembers
-                  ).map((p) => (
+                  {(searchResults.length > 0 ? searchResults : recentMembers).map((p) => (
                     <button
                       key={p.id}
                       onClick={() => {
@@ -998,31 +948,19 @@ export default function RelationshipManager({
                                      : "bg-stone-400"
                                }`}
                         >
-                          {p.gender === "male"
-                            ? "♂"
-                            : p.gender === "female"
-                              ? "♀"
-                              : "?"}
+                          {p.gender === "male" ? "♂" : p.gender === "female" ? "♀" : "?"}
                         </span>
-                        <span className="font-medium text-stone-800">
-                          {p.full_name}
-                        </span>
+                        <span className="font-medium text-stone-800">{p.full_name}</span>
                       </div>
                       <span className="text-[10px] text-stone-400">
-                        {formatDisplayDate(
-                          p.birth_year,
-                          p.birth_month,
-                          p.birth_day,
-                        )}
+                        {formatDisplayDate(p.birth_year, p.birth_month, p.birth_day)}
                       </span>
                     </button>
                   ))}
                 </div>
               )}
               {selectedTargetId && (
-                <p className="text-xs text-green-600 mt-1">
-                  Đã chọn: {searchTerm}
-                </p>
+                <p className="text-xs text-green-600 mt-1">Đã chọn: {searchTerm}</p>
               )}
             </div>
 
@@ -1053,9 +991,7 @@ export default function RelationshipManager({
       {/* Bulk Add Children Form (Admin) */}
       {canEdit && isAddingBulk && (
         <div className="mt-4 bg-sky-50/50 p-4 sm:p-5 rounded-xl border border-sky-200 shadow-sm">
-          <h4 className="font-bold text-sky-800 mb-3 text-sm">
-            Thêm Nhanh Nhiều Con
-          </h4>
+          <h4 className="font-bold text-sky-800 mb-3 text-sm">Thêm Nhanh Nhiều Con</h4>
 
           <div className="space-y-4">
             <div>
@@ -1072,13 +1008,10 @@ export default function RelationshipManager({
                 onChange={(e) => setSelectedSpouseId(e.target.value)}
                 className="bg-white text-stone-900 block w-full max-w-full text-sm rounded-lg border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 sm:p-2.5 border transition-colors"
               >
-                <option value="unknown">
-                  Không rõ (hoặc Vợ/Chồng khác chưa thêm)
-                </option>
+                <option value="unknown">Không rõ (hoặc Vợ/Chồng khác chưa thêm)</option>
                 {groupByType("spouse").map((rel) => (
                   <option key={rel.id} value={rel.targetPerson.id}>
-                    {rel.targetPerson.full_name}{" "}
-                    {rel.note ? `(${rel.note})` : ""}
+                    {rel.targetPerson.full_name} {rel.note ? `(${rel.note})` : ""}
                   </option>
                 ))}
               </select>
@@ -1100,9 +1033,7 @@ export default function RelationshipManager({
                     </span>
                     <button
                       onClick={() => {
-                        const newBulk = bulkChildren.filter(
-                          (_, i) => i !== index,
-                        );
+                        const newBulk = bulkChildren.filter((_, i) => i !== index);
                         if (newBulk.length === 0) {
                           newBulk.push({
                             name: "",
@@ -1207,9 +1138,7 @@ export default function RelationshipManager({
             <div className="flex gap-2 pt-4 border-t border-stone-200">
               <button
                 onClick={handleBulkAdd}
-                disabled={
-                  processing || bulkChildren.every((c) => c.name.trim() === "")
-                }
+                disabled={processing || bulkChildren.every((c) => c.name.trim() === "")}
                 className="flex-1 bg-sky-600 text-white py-2 sm:py-2.5 rounded-md sm:rounded-lg text-sm font-medium hover:bg-sky-700 disabled:opacity-50 transition-colors"
               >
                 {processing ? "Đang lưu..." : "Lưu Tất Cả"}
@@ -1240,9 +1169,7 @@ export default function RelationshipManager({
       {/* Quick Add Spouse Form (Admin) */}
       {canEdit && isAddingSpouse && (
         <div className="mt-4 bg-rose-50/50 p-4 sm:p-5 rounded-xl border border-rose-200 shadow-sm">
-          <h4 className="font-bold text-rose-800 mb-3 text-sm">
-            Thêm Nhanh Vợ/Chồng
-          </h4>
+          <h4 className="font-bold text-rose-800 mb-3 text-sm">Thêm Nhanh Vợ/Chồng</h4>
 
           <div className="space-y-3">
             <div>
@@ -1301,11 +1228,7 @@ export default function RelationshipManager({
 
             <p className="text-xs text-stone-500 italic mt-1">
               * Giới tính sẽ tự động gán là{" "}
-              {personGender === "male"
-                ? "Nữ"
-                : personGender === "female"
-                  ? "Nam"
-                  : "Nữ"}{" "}
+              {personGender === "male" ? "Nữ" : personGender === "female" ? "Nam" : "Nữ"}{" "}
               (dựa theo giới tính người hiện tại).
             </p>
 

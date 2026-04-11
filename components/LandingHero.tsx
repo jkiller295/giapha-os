@@ -1,13 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import {
-  ArrowRight,
-  Network,
-  ShieldCheck,
-  Sparkles,
-  Users,
-} from "lucide-react";
+import { ArrowRight, Network, ShieldCheck, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 
 const fadeIn: Variants = {
@@ -61,8 +55,8 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
           </h1>
 
           <p className="text-lg sm:text-xl md:text-2xl text-stone-600 max-w-2xl mx-auto leading-relaxed font-light">
-            Gìn giữ và lưu truyền những giá trị, cội nguồn và truyền thống tốt
-            đẹp của dòng họ cho các thế hệ mai sau.
+            Gìn giữ và lưu truyền những giá trị, cội nguồn và truyền thống tốt đẹp của
+            dòng họ cho các thế hệ mai sau.
           </p>
         </motion.div>
 
