@@ -4,7 +4,14 @@ import PersonCard from "@/components/PersonCard";
 import { Person, Relationship } from "@/types";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
-import { ArrowUpDown, FileText, Filter, Loader2, Plus, Search } from "lucide-react";
+import {
+  ArrowUpDown,
+  FileText,
+  Filter,
+  Loader2,
+  Plus,
+  Search,
+} from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useDashboard } from "./DashboardContext";
 
@@ -27,11 +34,31 @@ export default function DashboardMemberList({
   const exportToPdf = async () => {
     setIsExportingPdf(true);
 
-    // Build marriage status maps
+    // ── Helpers ────────────────────────────────────────────────────────────
+    const fmtDate = (y: number | null, m: number | null, d: number | null) => {
+      if (!y && !m && !d) return "Chưa rõ";
+      const parts: string[] = [];
+      if (d) parts.push(d.toString().padStart(2, "0"));
+      if (m) parts.push(m.toString().padStart(2, "0"));
+      if (y) parts.push(y.toString());
+      return parts.join("/");
+    };
+
+    // ── Build lookup maps from relationships ───────────────────────────────
+    // marriedIds: has at least one non-divorced marriage
+    // divorcedIds: has at least one divorced marriage
+    // spousesMap: personId → list of spouse IDs (all marriages)
     const marriedIds = new Set<string>();
     const divorcedIds = new Set<string>();
+    const spousesMap = new Map<string, string[]>();
+
     relationships.forEach((r) => {
       if (r.type === "marriage") {
+        [r.person_a, r.person_b].forEach((id) => {
+          if (!spousesMap.has(id)) spousesMap.set(id, []);
+        });
+        spousesMap.get(r.person_a)!.push(r.person_b);
+        spousesMap.get(r.person_b)!.push(r.person_a);
         if (r.is_divorced) {
           divorcedIds.add(r.person_a);
           divorcedIds.add(r.person_b);
@@ -42,16 +69,7 @@ export default function DashboardMemberList({
       }
     });
 
-    const fmtDate = (y: number | null, m: number | null, d: number | null) => {
-      if (!y && !m && !d) return "Chưa rõ";
-      const parts = [];
-      if (d) parts.push(d.toString().padStart(2, "0"));
-      if (m) parts.push(m.toString().padStart(2, "0"));
-      if (y) parts.push(y.toString());
-      return parts.join("/");
-    };
-
-    // Group persons by generation
+    // ── Group by generation ────────────────────────────────────────────────
     const byGen: Record<number, Person[]> = {};
     [...initialPersons]
       .sort((a, b) => (a.generation ?? 999) - (b.generation ?? 999))
@@ -61,25 +79,89 @@ export default function DashboardMemberList({
         byGen[g].push(p);
       });
 
-    // Build HTML string
-    const personCard = (p: Person, i: number) => {
+    // ── Build couple groups within a generation ────────────────────────────
+    // Each group is: [bloodlinePerson, ...spouses]
+    // Bloodline person goes in the middle when there are multiple spouses.
+    const buildCoupleGroups = (persons: Person[]): Person[][] => {
+      const personSet = new Set(persons.map((p) => p.id));
+      const placed = new Set<string>();
+      const groups: Person[][] = [];
+
+      for (const p of persons) {
+        if (placed.has(p.id)) continue;
+        placed.add(p.id);
+
+        // Find spouses of this person that are also in this generation
+        const spouseIds = (spousesMap.get(p.id) || []).filter(
+          (id) => personSet.has(id) && !placed.has(id),
+        );
+        const spouses = spouseIds
+          .map((id) => persons.find((q) => q.id === id)!)
+          .filter(Boolean);
+        spouses.forEach((s) => placed.add(s.id));
+
+        if (spouses.length === 0) {
+          groups.push([p]);
+        } else if (spouses.length === 1) {
+          // 2-col: bloodline first, spouse second
+          const bloodline = !p.is_in_law ? p : spouses[0];
+          const inlaw = !p.is_in_law ? spouses[0] : p;
+          groups.push([bloodline, inlaw]);
+        } else {
+          // 3-col: bloodline in center, spouses on sides
+          const bloodline = !p.is_in_law
+            ? p
+            : spouses.find((s) => !s.is_in_law) || p;
+          const rest = [p, ...spouses].filter((q) => q.id !== bloodline.id);
+          groups.push([rest[0], bloodline, ...rest.slice(1)]);
+        }
+      }
+      return groups;
+    };
+
+    // ── Render a single person card as HTML string ─────────────────────────
+    const personCard = (p: Person, shade: boolean) => {
       const dob = fmtDate(p.birth_year, p.birth_month, p.birth_day);
       const dod = p.is_deceased
-        ? (p.death_day || p.death_month || p.death_year)
+        ? p.death_day || p.death_month || p.death_year
           ? fmtDate(p.death_year, p.death_month, p.death_day)
-          : (p.death_lunar_day || p.death_lunar_month || p.death_lunar_year)
-            ? fmtDate(p.death_lunar_year, p.death_lunar_month, p.death_lunar_day) + " (ÂL)"
+          : p.death_lunar_day || p.death_lunar_month || p.death_lunar_year
+            ? fmtDate(
+                p.death_lunar_year,
+                p.death_lunar_month,
+                p.death_lunar_day,
+              ) + " (ÂL)"
             : "Chưa rõ"
         : null;
       const bloodline = p.is_in_law
-        ? (p.gender === "female" ? "Dâu" : p.gender === "male" ? "Rể" : "Khách")
+        ? p.gender === "female"
+          ? "Dâu"
+          : p.gender === "male"
+            ? "Rể"
+            : "Khách"
         : "Huyết thống";
-      const maritalStatus = divorcedIds.has(p.id) ? "Đã ly hôn" : marriedIds.has(p.id) ? "Đã kết hôn" : "Chưa kết hôn";
-      const maritalColor = divorcedIds.has(p.id) ? "#dc2626" : marriedIds.has(p.id) ? "#16a34a" : "#78716c";
-      const genderLabel = p.gender === "male" ? "Nam" : p.gender === "female" ? "Nữ" : "Khác";
-      const genderColor = p.gender === "male" ? "#0369a1" : p.gender === "female" ? "#be185d" : "#57534e";
+      const maritalStatus =
+        divorcedIds.has(p.id) && p.is_in_law
+          ? "Đã ly hôn"
+          : marriedIds.has(p.id)
+            ? "Đã kết hôn"
+            : "Chưa kết hôn";
+      const maritalColor =
+        divorcedIds.has(p.id) && p.is_in_law
+          ? "#dc2626"
+          : marriedIds.has(p.id)
+            ? "#16a34a"
+            : "#78716c";
+      const genderLabel =
+        p.gender === "male" ? "Nam" : p.gender === "female" ? "Nữ" : "Khác";
+      const genderColor =
+        p.gender === "male"
+          ? "#0369a1"
+          : p.gender === "female"
+            ? "#be185d"
+            : "#57534e";
       const bloodlineColor = p.is_in_law ? "#9d174d" : "#44403c";
-      const bg = i % 2 === 0 ? "#ffffff" : "#fafaf9";
+      const bg = shade ? "#fafaf9" : "#ffffff";
 
       const row = (label: string, value: string, color = "#1c1917") =>
         `<div style="display:flex;gap:8px;margin-bottom:3px;">
@@ -88,9 +170,8 @@ export default function DashboardMemberList({
         </div>`;
 
       return `
-        <div style="border:1px solid #e7e5e4;border-radius:8px;padding:12px 14px;background:${bg};">
+        <div style="border:1px solid #e7e5e4;border-radius:8px;padding:12px 14px;background:${bg};height:100%;box-sizing:border-box;">
           <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0efee;">
-            <span style="font-size:10px;color:#a8a29e;flex-shrink:0;">${i + 1}.</span>
             <span style="font-size:13px;font-weight:bold;color:#1c1917;line-height:1.3;">
               ${p.full_name}${p.other_names ? ` <span style="font-weight:normal;color:#78716c;font-size:11px;">(${p.other_names})</span>` : ""}
             </span>
@@ -104,80 +185,151 @@ export default function DashboardMemberList({
         </div>`;
     };
 
-    const generationBlocks = Object.entries(byGen).map(([gen, persons]) => `
-      <div style="margin-bottom:40px;">
-        <div style="background:#92400e;padding:10px 20px;margin-bottom:20px;border-radius:6px;">
-          <span style="font-size:16px;font-weight:bold;color:#ffffff;text-transform:uppercase;letter-spacing:0.1em;">
-            ${gen === "0" ? "Chưa xác định đời" : `Đời thứ ${gen}`}
-          </span>
-          <span style="font-size:12px;color:#fde68a;margin-left:12px;">${persons.length} thành viên</span>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          ${persons.map((p, i) => personCard(p, i)).join("")}
-        </div>
-      </div>`).join("");
+    // ── Render a couple group row ──────────────────────────────────────────
+    const coupleRow = (group: Person[], shade: boolean) => {
+      const cols = group.length; // 1, 2, or 3
+      const colWidth =
+        cols === 1 ? "580px" : cols === 2 ? "1fr 1fr" : "1fr 1fr 1fr";
+      const wrapperWidth = cols === 1 ? "50%" : "100%";
+      // For a single person, only take half the width
+      const gridStyle =
+        cols === 1
+          ? `display:block;width:50%;`
+          : `display:grid;grid-template-columns:${colWidth};gap:12px;`;
 
-    const html = `
-      <div style="width:1240px;background:#ffffff;font-family:Arial,sans-serif;padding:48px;box-sizing:border-box;">
-        <div style="text-align:center;margin-bottom:32px;">
-          <h1 style="font-size:26px;font-weight:bold;color:#1c1917;margin:0;">DANH SÁCH THÀNH VIÊN GIA PHẢ</h1>
-          <p style="font-size:13px;color:#78716c;margin-top:6px;">
-            Xuất ngày ${new Date().toLocaleDateString("vi-VN")} · Tổng cộng ${initialPersons.length} thành viên
-          </p>
-        </div>
-        ${generationBlocks}
-        <div style="margin-top:40px;border-top:1px solid #e7e5e4;padding-top:14px;text-align:center;color:#a8a29e;font-size:11px;">
-          Tài liệu được tạo tự động từ hệ thống Gia Phả
-        </div>
-      </div>`;
+      // Amber highlight background for couples
+      const coupleWrap =
+        cols > 1
+          ? `background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:10px;margin-bottom:12px;`
+          : `margin-bottom:12px;width:50%;`;
 
-    // Mount to body so html-to-image can fully lay it out
+      return `
+        <div style="${coupleWrap}">
+          <div style="${gridStyle}">
+            ${group.map((p, i) => personCard(p, shade && i % 2 === 1)).join("")}
+          </div>
+        </div>`;
+    };
+
+    // ── Build HTML for one generation block ───────────────────────────────
+    const generationBlock = (gen: string, persons: Person[]) => {
+      const groups = buildCoupleGroups(persons);
+      const rows = groups.map((g, i) => coupleRow(g, i % 2 === 1)).join("");
+      return `
+        <div>
+          <div style="background:#92400e;padding:10px 20px;margin-bottom:16px;border-radius:6px;">
+            <span style="font-size:16px;font-weight:bold;color:#ffffff;text-transform:uppercase;letter-spacing:0.1em;">
+              ${gen === "0" ? "Chưa xác định đời" : `Đời thứ ${gen}`}
+            </span>
+            <span style="font-size:12px;color:#fde68a;margin-left:12px;">${persons.length} thành viên</span>
+          </div>
+          ${rows}
+        </div>`;
+    };
+
+    // ── Render each generation as a separate element and capture ──────────
+    // This avoids mid-card page cuts — each generation becomes one or more pages.
+    const A4_W_PX = 1240;
+    const A4_W_MM = 210;
+    const A4_H_MM = 297;
+    const PADDING = 48;
+    const CONTENT_W = A4_W_PX - PADDING * 2;
+
     const wrapper = document.createElement("div");
-    wrapper.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none;z-index:-1;";
-    wrapper.innerHTML = html;
+    wrapper.style.cssText =
+      "position:fixed;top:0;left:0;opacity:0;pointer-events:none;z-index:-1;";
     document.body.appendChild(wrapper);
-    const el = wrapper.firstElementChild as HTMLElement;
 
-    // Wait for layout
-    await new Promise((r) => setTimeout(r, 300));
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+    let isFirstPage = true;
 
-    try {
-      const A4_W_PX = 1240;
-      const A4_W_MM = 210;
-
+    const captureEl = async (el: HTMLElement): Promise<void> => {
+      await new Promise((r) => setTimeout(r, 200));
       const imgData = await toJpeg(el, {
         cacheBust: true,
         backgroundColor: "#ffffff",
         pixelRatio: 3,
         width: A4_W_PX,
       });
-
       const imgEl = new Image();
-      await new Promise<void>((r) => { imgEl.onload = () => r(); imgEl.src = imgData; });
+      await new Promise<void>((r) => {
+        imgEl.onload = () => r();
+        imgEl.src = imgData;
+      });
 
-      const totalHeightPx = imgEl.height;
-      const pageHeightPx = Math.round((297 / 210) * imgEl.width);
-      const pageCount = Math.ceil(totalHeightPx / pageHeightPx);
-
-      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const totalH = imgEl.height;
+      const pageH = Math.round((A4_H_MM / A4_W_MM) * imgEl.width);
+      const pageCount = Math.ceil(totalH / pageH);
       const canvas = document.createElement("canvas");
       canvas.width = imgEl.width;
 
       for (let i = 0; i < pageCount; i++) {
-        const sliceY = i * pageHeightPx;
-        const sliceH = Math.min(pageHeightPx, totalHeightPx - sliceY);
+        const sliceY = i * pageH;
+        const sliceH = Math.min(pageH, totalH - sliceY);
         canvas.height = sliceH;
         const ctx = canvas.getContext("2d")!;
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, sliceH);
-        ctx.drawImage(imgEl, 0, sliceY, imgEl.width, sliceH, 0, 0, imgEl.width, sliceH);
+        ctx.drawImage(
+          imgEl,
+          0,
+          sliceY,
+          imgEl.width,
+          sliceH,
+          0,
+          0,
+          imgEl.width,
+          sliceH,
+        );
         const sliceData = canvas.toDataURL("image/jpeg", 0.95);
         const sliceHMm = (sliceH / imgEl.width) * A4_W_MM;
-        if (i > 0) pdf.addPage();
+        if (!isFirstPage) pdf.addPage();
+        isFirstPage = false;
         pdf.addImage(sliceData, "JPEG", 0, 0, A4_W_MM, sliceHMm);
       }
+    };
 
-      pdf.save(`danh-sach-thanh-vien-${new Date().toISOString().split("T")[0]}.pdf`);
+    try {
+      // Page 1: cover / title
+      const titleHtml = `
+        <div style="width:${A4_W_PX}px;background:#ffffff;font-family:Arial,sans-serif;padding:${PADDING}px;box-sizing:border-box;">
+          <div style="text-align:center;padding:60px 0;">
+            <h1 style="font-size:28px;font-weight:bold;color:#1c1917;margin:0;">DANH SÁCH THÀNH VIÊN GIA PHẢ</h1>
+            <p style="font-size:14px;color:#78716c;margin-top:10px;">
+              Xuất ngày ${new Date().toLocaleDateString("vi-VN")} · Tổng cộng ${initialPersons.length} thành viên
+            </p>
+          </div>
+        </div>`;
+      wrapper.innerHTML = titleHtml;
+      await captureEl(wrapper.firstElementChild as HTMLElement);
+
+      // One block per generation
+      for (const [gen, persons] of Object.entries(byGen)) {
+        const blockHtml = `
+          <div style="width:${A4_W_PX}px;background:#ffffff;font-family:Arial,sans-serif;padding:${PADDING}px;box-sizing:border-box;">
+            ${generationBlock(gen, persons)}
+          </div>`;
+        wrapper.innerHTML = blockHtml;
+        await captureEl(wrapper.firstElementChild as HTMLElement);
+      }
+
+      // Footer page
+      const footerHtml = `
+        <div style="width:${A4_W_PX}px;background:#ffffff;font-family:Arial,sans-serif;padding:${PADDING}px;box-sizing:border-box;">
+          <div style="border-top:1px solid #e7e5e4;padding-top:14px;text-align:center;color:#a8a29e;font-size:11px;width:${CONTENT_W}px;">
+            Tài liệu được tạo tự động từ hệ thống Gia Phả
+          </div>
+        </div>`;
+      wrapper.innerHTML = footerHtml;
+      await captureEl(wrapper.firstElementChild as HTMLElement);
+
+      pdf.save(
+        `danh-sach-thanh-vien-${new Date().toISOString().split("T")[0]}.pdf`,
+      );
     } catch (err) {
       console.error("PDF export error:", err);
     } finally {
@@ -801,9 +953,13 @@ export default function DashboardMemberList({
                                       {isCouple && (
                                         <>
                                           {/* Desktop & Tablet background */}
-                                          <div className={`hidden md:block absolute -inset-3 lg:-inset-4 border rounded-4xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0 ${isGroupDivorced ? "bg-red-50/50 border-red-200/70" : "bg-amber-50/70 border-amber-200/80"}`}></div>
+                                          <div
+                                            className={`hidden md:block absolute -inset-3 lg:-inset-4 border rounded-4xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0 ${isGroupDivorced ? "bg-red-50/50 border-red-200/70" : "bg-amber-50/70 border-amber-200/80"}`}
+                                          ></div>
                                           {/* Mobile background */}
-                                          <div className={`md:hidden absolute -inset-2 border rounded-3xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0 ${isGroupDivorced ? "bg-red-50/50 border-red-200/70" : "bg-amber-50/70 border-amber-200/80"}`}></div>
+                                          <div
+                                            className={`md:hidden absolute -inset-2 border rounded-3xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0 ${isGroupDivorced ? "bg-red-50/50 border-red-200/70" : "bg-amber-50/70 border-amber-200/80"}`}
+                                          ></div>
                                         </>
                                       )}
                                       <div
@@ -838,22 +994,32 @@ export default function DashboardMemberList({
                                               />
                                               {/* Visual link between spouses (desktop >= md) */}
                                               {isCouple &&
-                                                pIdx < group.length - 1 && (
-                                                  isLinkDivorced ? (
-                                                    <div className="hidden md:block absolute top-[50%] -right-3 w-6 z-10 translate-x-1/2" style={{ borderTop: "2px dashed #fca5a5" }}></div>
-                                                  ) : (
-                                                    <div className="hidden md:block absolute top-[50%] -right-3 w-6 h-0.5 bg-amber-300 z-10 translate-x-1/2"></div>
-                                                  )
-                                                )}
+                                                pIdx < group.length - 1 &&
+                                                (isLinkDivorced ? (
+                                                  <div
+                                                    className="hidden md:block absolute top-[50%] -right-3 w-6 z-10 translate-x-1/2"
+                                                    style={{
+                                                      borderTop:
+                                                        "2px dashed #fca5a5",
+                                                    }}
+                                                  ></div>
+                                                ) : (
+                                                  <div className="hidden md:block absolute top-[50%] -right-3 w-6 h-0.5 bg-amber-300 z-10 translate-x-1/2"></div>
+                                                ))}
                                               {/* Visual link between spouses (mobile < md) */}
                                               {isCouple &&
-                                                pIdx < group.length - 1 && (
-                                                  isLinkDivorced ? (
-                                                    <div className="md:hidden absolute -bottom-6 left-1/2 h-6 z-10 -translate-x-1/2" style={{ borderLeft: "2px dashed #fca5a5" }}></div>
-                                                  ) : (
-                                                    <div className="md:hidden absolute -bottom-6 left-1/2 w-0.5 h-6 bg-amber-300 z-10 -translate-x-1/2"></div>
-                                                  )
-                                                )}
+                                                pIdx < group.length - 1 &&
+                                                (isLinkDivorced ? (
+                                                  <div
+                                                    className="md:hidden absolute -bottom-6 left-1/2 h-6 z-10 -translate-x-1/2"
+                                                    style={{
+                                                      borderLeft:
+                                                        "2px dashed #fca5a5",
+                                                    }}
+                                                  ></div>
+                                                ) : (
+                                                  <div className="md:hidden absolute -bottom-6 left-1/2 w-0.5 h-6 bg-amber-300 z-10 -translate-x-1/2"></div>
+                                                ))}
                                             </div>
                                           );
                                         })}
